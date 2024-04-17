@@ -1,9 +1,8 @@
-/* eslint-disable max-classes-per-file, @typescript-eslint/no-magic-numbers */
+/* eslint-disable max-classes-per-file */
 
 import {
     IsArray,
     IsBoolean,
-    IsISBN,
     IsISO8601,
     IsInt,
     IsOptional,
@@ -22,12 +21,11 @@ import { ZubehoerDTO } from './zubehoerDTO.entity.js';
 export const MAX_RATING = 5;
 
 /**
- * Entity-Klasse für Bücher ohne TypeORM und ohne Referenzen.
+ * Entity-Klasse für Autos ohne TypeORM und ohne Referenzen.
  */
-export class BuchDtoOhneRef {
-    @IsISBN(13)
-    @ApiProperty({ example: '978-0-007-00644-1', type: String })
-    readonly isbn!: string;
+export class AutoDtoOhneRef {
+    @ApiProperty({ example: 'W0L000051T2123456', type: String })
+    readonly fahrgestellnummer!: string;
 
     @IsInt()
     @Min(0)
@@ -56,13 +54,13 @@ export class BuchDtoOhneRef {
 }
 
 /**
- * Entity-Klasse für Bücher ohne TypeORM.
+ * Entity-Klasse für Autos ohne TypeORM.
  */
-export class BuchDTO extends BuchDtoOhneRef {
+export class AutoDTO extends AutoDtoOhneRef {
     @ValidateNested()
     @Type(() => BezeichnungDTO)
     @ApiProperty({ type: BezeichnungDTO })
-    readonly titel!: BezeichnungDTO; // NOSONAR
+    readonly bezeichnung!: BezeichnungDTO; // NOSONAR
 
     @IsOptional()
     @IsArray()
@@ -73,4 +71,4 @@ export class BuchDTO extends BuchDtoOhneRef {
 
     // ZubehoerDTO
 }
-/* eslint-enable max-classes-per-file, @typescript-eslint/no-magic-numbers */
+/* eslint-enable max-classes-per-file */
