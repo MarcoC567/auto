@@ -18,7 +18,7 @@ export class Zubehoer {
     @Column('varchar')
     readonly beschreibung: string | undefined;
 
-    @ManyToOne(() => Auto, (auto) => auto.zubehoer)
+    @ManyToOne(() => Auto, (auto) => auto.zubehoere)
     @JoinColumn({ name: 'auto_id' })
     auto: Auto | undefined;
 

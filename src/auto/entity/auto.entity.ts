@@ -70,7 +70,7 @@ export class Auto {
     @OneToMany(() => Zubehoer, (zubehoer) => zubehoer.auto, {
         cascade: ['insert', 'remove'],
     })
-    readonly zubehoer: Zubehoer[] | undefined;
+    readonly zubehoere: Zubehoer[] | undefined;
 
     @CreateDateColumn({
         type: dbType === 'sqlite' ? 'datetime' : 'timestamp',
