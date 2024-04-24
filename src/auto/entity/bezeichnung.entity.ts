@@ -15,7 +15,7 @@ export class Bezeichnung {
     @Column()
     readonly bezeichnung!: string;
 
-    @Column()
+    @Column({ type: 'varchar' })
     readonly zusatz: string | undefined;
 
     @OneToOne(() => Auto, (auto) => auto.bezeichnung)

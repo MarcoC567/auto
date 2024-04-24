@@ -3,14 +3,14 @@ import { Args, Mutation, Resolver } from '@nestjs/graphql';
 import { AuthGuard, Roles } from 'nest-keycloak-connect';
 import { IsInt, IsNumberString, Min } from 'class-validator';
 import { UseFilters, UseGuards, UseInterceptors } from '@nestjs/common';
-import { type Zubehoer } from '../entity/zubehoer.entity.js';
 import { type Auto } from '../entity/auto.entity.js';
 import { AutoDTO } from '../rest/autoDTO.entity.js';
 import { AutoWriteService } from '../service/auto-write.service.js';
+import { type Bezeichnung } from '../entity/bezeichnung.entity.js';
 import { HttpExceptionFilter } from './http-exception.filter.js';
 import { type IdInput } from './auto-query.resolver.js';
 import { ResponseTimeInterceptor } from '../../logger/response-time.interceptor.js';
-import { type Bezeichnung } from '../entity/bezeichnung.entity.js';
+import { type Zubehoer } from '../entity/zubehoer.entity.js';
 import { getLogger } from '../../logger/logger.js';
 
 // Authentifizierung und Autorisierung durch
@@ -100,7 +100,7 @@ export class AutoMutationResolver {
         const bezeichnung: Bezeichnung = {
             id: undefined,
             bezeichnung: bezeichnungDTO.bezeichnung,
-            unterbezeichnung: bezeichnungDTO.unterbezeichnung,
+            zusatz: bezeichnungDTO.zusatz,
             auto: undefined,
         };
         const zubehoere = autoDTO.zubehoere?.map((zubehoerDTO) => {

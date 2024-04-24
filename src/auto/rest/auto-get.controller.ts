@@ -66,7 +66,7 @@ export type BezeichnungModel = Omit<Bezeichnung, 'auto' | 'id'>;
 /** Auto-Objekt mit HATEOAS-Links */
 export type AutoModel = Omit<
     Auto,
-    'aktualisiert' | 'bezeichnung' | 'erzeugt' | 'id' | 'version' | 'zubehoer'
+    'zubehoere' | 'aktualisiert' | 'bezeichnung' | 'erzeugt' | 'id' | 'version'
 > & {
     bezeichnung: BezeichnungModel;
     // eslint-disable-next-line @typescript-eslint/naming-convention

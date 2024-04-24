@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-import { Args, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
+import { Args, Query, Resolver } from '@nestjs/graphql';
 import { UseFilters, UseInterceptors } from '@nestjs/common';
 import { Auto } from '../entity/auto.entity.js';
 import { AutoReadService } from '../service/auto-read.service.js';
@@ -61,13 +61,13 @@ export class AutoQueryResolver {
         return auto;
     }
 
-    @Query('buecher')
+    @Query('autos')
     @Public()
     async find(@Args() input: SuchkriterienInput | undefined) {
         this.#logger.debug('find: input=%o', input);
-        const buecher = await this.#service.find(input?.suchkriterien);
-        this.#logger.debug('find: buecher=%o', buecher);
-        return buecher;
+        const autos = await this.#service.find(input?.suchkriterien);
+        this.#logger.debug('find: autos=%o', autos);
+        return autos;
     }
 
     // @ResolveField('rabatt')

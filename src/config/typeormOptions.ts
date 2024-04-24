@@ -24,10 +24,10 @@ import {
     OracleNamingStrategy,
     SnakeNamingStrategy,
 } from './typeormNamingStrategy.js';
-import { Buch } from '../buch/entity/buch.entity.js';
+import { Auto } from '../auto/entity/auto.entity.js';
 import { type DataSourceOptions } from 'typeorm';
 import { dbType } from './db.js';
-import { entities } from '../buch/entity/entities.js';
+import { entities } from '../auto/entity/entities.js';
 import { logLevel } from './logger.js';
 import { nodeConfig } from './node.js';
 import path from 'node:path';
@@ -36,11 +36,11 @@ import { readFileSync } from 'node:fs';
 const { db } = config;
 
 // nullish coalescing
-const database = (db?.name as string | undefined) ?? Buch.name.toLowerCase();
+const database = (db?.name as string | undefined) ?? Auto.name.toLowerCase();
 
 const host = (db?.host as string | undefined) ?? 'localhost';
 const username =
-    (db?.username as string | undefined) ?? Buch.name.toLowerCase();
+    (db?.username as string | undefined) ?? Auto.name.toLowerCase();
 const pass = (db?.password as string | undefined) ?? 'p';
 const passAdmin = (db?.passwordAdmin as string | undefined) ?? 'p';
 

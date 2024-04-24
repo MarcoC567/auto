@@ -24,35 +24,31 @@
 -- https://sqlite.org/lang_createindex.html
 -- https://stackoverflow.com/questions/37619526/how-can-i-change-the-default-sqlite-timezone
 
-CREATE TABLE IF NOT EXISTS buch (
+CREATE TABLE IF NOT EXISTS auto (
     id             INTEGER PRIMARY KEY AUTOINCREMENT,
     version        INTEGER NOT NULL DEFAULT 0,
-    isbn           TEXT NOT NULL UNIQUE,
-    rating         INTEGER NOT NULL CHECK (rating >= 0 AND rating <= 5),
+    fahrgestellnummer           TEXT NOT NULL UNIQUE,
     art            TEXT,
     preis          REAL,
-    rabatt         REAL,
     lieferbar      INTEGER NOT NULL CHECK (lieferbar = 0 OR lieferbar = 1) DEFAULT 0,
     datum          TEXT,
-    homepage       TEXT,
-    schlagwoerter  TEXT,
     erzeugt        TEXT NOT NULL,
     aktualisiert   TEXT NOT NULL
 );
-CREATE INDEX IF NOT EXISTS buch_isbn_idx ON buch(isbn);
+CREATE INDEX IF NOT EXISTS auto_fahrgestellnummer_idx ON auto(fahrgestellnummer);
 
-CREATE TABLE IF NOT EXISTS titel (
+CREATE TABLE IF NOT EXISTS bezeichnung (
     id          INTEGER PRIMARY KEY AUTOINCREMENT,
-    titel       TEXT NOT NULL,
-    untertitel  TEXT,
-    buch_id     INTEGER NOT NULL UNIQUE REFERENCES buch
+    bezeichnung       TEXT NOT NULL,
+    zusatz  TEXT,
+    auto_id     INTEGER NOT NULL UNIQUE REFERENCES auto
 );
 
 
-CREATE TABLE IF NOT EXISTS abbildung (
+CREATE TABLE IF NOT EXISTS zubehoer (
     id              INTEGER PRIMARY KEY AUTOINCREMENT,
-    beschriftung    TEXT NOT NULL,
-    content_type    TEXT NOT NULL,
-    buch_id         INTEGER NOT NULL REFERENCES buch
+    name    TEXT NOT NULL,
+    beschreibung    TEXT NOT NULL,
+    auto_id         INTEGER NOT NULL REFERENCES auto
 );
-CREATE INDEX IF NOT EXISTS abbildung_buch_id_idx ON abbildung(buch_id);
+CREATE INDEX IF NOT EXISTS zubehoer_auto_id_idx ON zubehoer(auto_id);

@@ -16,7 +16,7 @@ import { AutoReadService } from './auto-read.service.js';
 import { Bezeichnung } from '../entity/bezeichnung.entity.js';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MailService } from '../../mail/mail.service.js';
-import { Zubehoer } from '../entity/zubehoer.entity';
+import { Zubehoer } from '../entity/zubehoer.entity.js';
 import { getLogger } from '../../logger/logger.js';
 
 /** Typdefinitionen zum Aktualisieren eines Autos mit `update`. */

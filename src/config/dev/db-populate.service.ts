@@ -43,7 +43,7 @@ import { readFileSync } from 'node:fs';
  */
 @Injectable()
 export class DbPopulateService implements OnApplicationBootstrap {
-    readonly #tabellen = ['buch', 'titel', 'abbildung'];
+    readonly #tabellen = ['auto', 'bezeichnung', 'zubehoer'];
 
     readonly #datasource: DataSource;
 
@@ -55,21 +55,17 @@ export class DbPopulateService implements OnApplicationBootstrap {
     // https://docs.oracle.com/en/database/oracle/oracle-database/23/admin/managing-tables.html#GUID-2A801016-0399-4925-AD1B-A02683E81B59
     // https://docs.oracle.com/en/database/oracle/oracle-database/23/sutil/using-oracle-external-tables-examples.html
     // https://docs.oracle.com/en/database/oracle/oracle-database/23/sutil/oracle-sql-loader-commands.html
-    readonly #oracleInsertBuch = `
-        INSERT INTO buch(id,version,isbn,rating,art,preis,rabatt,lieferbar,datum,homepage,schlagwoerter,erzeugt,aktualisiert)
-        SELECT id,version,isbn,rating,art,preis,rabatt,lieferbar,datum,homepage,schlagwoerter,erzeugt,aktualisiert
+    readonly #oracleInsertAuto = `
+        INSERT INTO auto(id,version,fahrgestellnummer,art,preis,lieferbar,datum,erzeugt,aktualisiert)
+        SELECT id,version,fahrgestellnummer,art,preis,lieferbar,datum,erzeugt,aktualisiert
         FROM   EXTERNAL (
             (id            NUMBER(10,0),
             version       NUMBER(3,0),
-            isbn          VARCHAR2(17),
-            rating        NUMBER(1,0),
+            fahrgestellnummer          VARCHAR2(17),
             art           VARCHAR2(12),
             preis         NUMBER(8,2),
-            rabatt        NUMBER(4,3),
             lieferbar     NUMBER(1,0),
             datum         DATE,
-            homepage      VARCHAR2(40),
-            schlagwoerter VARCHAR2(64),
             erzeugt       TIMESTAMP,
             aktualisiert  TIMESTAMP)
             TYPE ORACLE_LOADER
@@ -78,53 +74,52 @@ export class DbPopulateService implements OnApplicationBootstrap {
                 RECORDS DELIMITED BY NEWLINE
                 SKIP 1
                 FIELDS TERMINATED BY ';'
-                (id,version,isbn,rating,art,preis,rabatt,lieferbar,
+                (id,version,fahrgestellnummer,art,preis,lieferbar,
                  datum DATE 'YYYY-MM-DD',
-                 homepage,schlagwoerter,
                  erzeugt CHAR(19) date_format TIMESTAMP mask 'YYYY-MM-DD HH24:MI:SS',
                  aktualisiert CHAR(19) date_format TIMESTAMP mask 'YYYY-MM-DD HH24:MI:SS')
             )
-            LOCATION ('buch.csv')
+            LOCATION ('auto.csv')
             REJECT LIMIT UNLIMITED
-        ) buch_external
+        ) auto_external
     `;
 
-    readonly #oracleInsertTitel = `
-        INSERT INTO titel(id,titel,untertitel,buch_id)
-        SELECT id,titel,untertitel,buch_id
+    readonly #oracleInsertBezeichnung = `
+        INSERT INTO bezeichnung(id,bezeichnung,zusatz,auto_id)
+        SELECT id,bezeichnung,zusatz,auto_id
         FROM   EXTERNAL (
             (id         NUMBER(10,0),
-            titel       VARCHAR2(40),
-            untertitel  VARCHAR2(40),
-            buch_id     NUMBER(10,0))
+            bezeichnung       VARCHAR2(40),
+            zusatz  VARCHAR2(40),
+            auto_id     NUMBER(10,0))
             TYPE ORACLE_LOADER
             DEFAULT DIRECTORY csv_dir
             ACCESS PARAMETERS (
                 RECORDS DELIMITED BY NEWLINE
                 SKIP 1
                 FIELDS TERMINATED BY ';')
-            LOCATION ('titel.csv')
+            LOCATION ('bezeichnung.csv')
             REJECT LIMIT UNLIMITED
-        ) titel_external
+        ) bezeichnung_external
     `;
 
-    readonly #oracleInsertAbbildung = `
-        INSERT INTO abbildung(id,beschriftung,content_type,buch_id)
-        SELECT id,beschriftung,content_type,buch_id
+    readonly #oracleInsertZubehoer = `
+        INSERT INTO zubehoer(id,name,beschreibung,auto_id)
+        SELECT id,name,beschreibung,auto_id
         FROM   EXTERNAL (
             (id         NUMBER(10,0),
-            beschriftung VARCHAR2(32),
-            content_type VARCHAR2(16),
-            buch_id     NUMBER(10,0))
+            name VARCHAR2(32),
+            beschreibung VARCHAR2(16),
+            auto_id     NUMBER(10,0))
             TYPE ORACLE_LOADER
             DEFAULT DIRECTORY csv_dir
             ACCESS PARAMETERS (
                 RECORDS DELIMITED BY NEWLINE
                 SKIP 1
                 FIELDS TERMINATED BY ';')
-            LOCATION ('abbildung.csv')
+            LOCATION ('zubehoer.csv')
             REJECT LIMIT UNLIMITED
-        ) abbildung_external
+        ) zubehoer_external
     `;
 
     /**
@@ -240,9 +235,9 @@ export class DbPopulateService implements OnApplicationBootstrap {
         this.#logger.debug('createScript = %s', createScript);
         await this.#executeStatements(createScript, true);
 
-        await this.#oracleInsert(this.#oracleInsertBuch);
-        await this.#oracleInsert(this.#oracleInsertTitel);
-        await this.#oracleInsert(this.#oracleInsertAbbildung);
+        await this.#oracleInsert(this.#oracleInsertAuto);
+        await this.#oracleInsert(this.#oracleInsertBezeichnung);
+        await this.#oracleInsert(this.#oracleInsertZubehoer);
     }
 
     async #populateSQLite() {

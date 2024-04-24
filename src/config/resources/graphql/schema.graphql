@@ -51,7 +51,7 @@ type Auto {
 }
 
 "Enum-Typ für die Art eines Autos"
-enum AutoArt {
+enum Art {
   SUV
   LIMOUSINE
 }
@@ -59,8 +59,7 @@ enum AutoArt {
 "Suchkriterien für Autos"
 input SuchkriterienInput {
   titel: String
-  isbn: String
-  rating: Int
+  fahrgestellnummer: String
   art: Art
   lieferbar: Boolean
 }
@@ -84,8 +83,7 @@ input AutoInput {
   preis: Float
   lieferbar: Boolean
   datum: String
-  bezeichnung: Bezeichnung
-Input!
+  bezeichnung:BezeichnungInput!
   zubehoere: [ZubehoerInput!]
 }
 
