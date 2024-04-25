@@ -9,4 +9,4 @@
 - GraphQL => AutoQueryResolver @ResolveField('rabatt')
 - DB
 - Dannach Pfade anpassen
-- .extras/postman/GraphQL_postman_collection.json => Bezeichnung  Alpha zu angepasster Bezeichnung
+- .extras/postman/GraphQL_postman_collection.json => Bezeichnung  Alpha zu angepasstem Wert; selbes für Art; sowie fahrgestellnummer
