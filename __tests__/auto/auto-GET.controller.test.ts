@@ -21,6 +21,7 @@ const bezeichnungNichtVorhanden = 'xx';
 // T e s t s
 // -----------------------------------------------------------------------------
 // Test-Suite
+
 // eslint-disable-next-line max-lines-per-function
 describe('GET /rest', () => {
     let baseURL: string;
