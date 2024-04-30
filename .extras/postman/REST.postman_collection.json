@@ -2353,7 +2353,7 @@
 									"pm.test('Fehlermeldungen im Response Body', () => {\r",
 									"    const body = pm.response.json();\r",
 									"    const { message } = body;\r",
-									"    const props = ['isbn', 'rating', 'art', 'preis', 'rabatt', 'datum', 'homepage'];\r",
+									"    const props = ['fahrgestellnummer', 'art', 'preis', 'datum'];\r",
 									"    pm.expect(message).to.be.an('array').that.has.a.lengthOf(props.length);\r",
 									"    message.forEach(msg => pm.expect(msg).to.be.a('string').that.includes.oneOf(props));\r",
 									"});"
