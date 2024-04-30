@@ -1,0 +1,3 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`GET /rest/:id Auto zu vorhandener ID 1`] = `"https://marco:3000/rest/1"`;

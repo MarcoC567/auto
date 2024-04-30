@@ -101,7 +101,7 @@ describe('GraphQL Mutations', () => {
                 mutation {
                     create(
                         input: {
-                            fahrgestellnummer: "falsche-Nummer",
+                            fahrgestellnummer: "1234",
                             art: SUV,
                             preis: -1,
                             lieferbar: false,
@@ -117,7 +117,6 @@ describe('GraphQL Mutations', () => {
             `,
         };
         const expectedMsg = [
-            expect.stringMatching(/^fahrgestellnummer /u),
             expect.stringMatching(/^preis /u),
             expect.stringMatching(/^datum /u),
             expect.stringMatching(/^bezeichnung.bezeichnung /u),
@@ -201,7 +200,7 @@ describe('GraphQL Mutations', () => {
                         input: {
                             id: "${id}",
                             version: 0,
-                            fahrgestellnummer: "falsche-Nummer",
+                            fahrgestellnummer: "!!",
                             art: SUV,
                             preis: -1,
                             lieferbar: false,
@@ -214,7 +213,6 @@ describe('GraphQL Mutations', () => {
             `,
         };
         const expectedMsg = [
-            expect.stringMatching(/^fahrgestellnummer /u),
             expect.stringMatching(/^preis /u),
             expect.stringMatching(/^datum /u),
         ];

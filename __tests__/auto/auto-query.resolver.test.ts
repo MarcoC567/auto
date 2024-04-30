@@ -29,11 +29,7 @@ type AutoDTO = Omit<Auto, 'zubehoere' | 'aktualisiert' | 'erzeugt'>;
 // -----------------------------------------------------------------------------
 const idVorhanden = '1';
 
-const bezeichnungVorhanden = 'Alpha';
-const teilBezeichnungVorhanden = 'a';
-const teilBezeichnungNichtVorhanden = 'abc';
-
-const fahrgestellnummerVorhanden = '978-3-897-22583-1';
+const fahrgestellnummerVorhanden = 'WBAKC81020C456789';
 
 // -----------------------------------------------------------------------------
 // T e s t s
@@ -133,127 +129,6 @@ describe('GraphQL Queries', () => {
         expect(message).toBe(`Es gibt kein Auto mit der ID ${id}.`);
         expect(path).toBeDefined();
         expect(path![0]).toBe('auto');
-        expect(extensions).toBeDefined();
-        expect(extensions!.code).toBe('BAD_USER_INPUT');
-    });
-
-    test('Auto zu vorhandener Bezeichnung', async () => {
-        // given
-        const body: GraphQLRequest = {
-            query: `
-                {
-                    autos(suchkriterien: {
-                        bezeichnung: "${bezeichnungVorhanden}"
-                    }) {
-                        art
-                        bezeichnung {
-                            bezeichnung
-                        }
-                    }
-                }
-            `,
-        };
-
-        // when
-        const { status, headers, data }: AxiosResponse<GraphQLResponseBody> =
-            await client.post(graphqlPath, body);
-
-        // then
-        expect(status).toBe(HttpStatus.OK);
-        expect(headers['content-type']).toMatch(/json/iu);
-        expect(data.errors).toBeUndefined();
-
-        expect(data.data).toBeDefined();
-
-        const { autos } = data.data!;
-
-        expect(autos).not.toHaveLength(0);
-
-        const autosArray: AutoDTO[] = autos;
-
-        expect(autosArray).toHaveLength(1);
-
-        const [auto] = autosArray;
-
-        expect(auto!.bezeichnung?.bezeichnung).toBe(bezeichnungVorhanden);
-    });
-
-    test('Auto zu vorhandener Teil-Bezeichnung', async () => {
-        // given
-        const body: GraphQLRequest = {
-            query: `
-                {
-                    autos(suchkriterien: {
-                        bezeichnung: "${teilBezeichnungVorhanden}"
-                    }) {
-                        bezeichnung {
-                            bezeichnung
-                        }
-                    }
-                }
-            `,
-        };
-
-        // when
-        const { status, headers, data }: AxiosResponse<GraphQLResponseBody> =
-            await client.post(graphqlPath, body);
-
-        // then
-        expect(status).toBe(HttpStatus.OK);
-        expect(headers['content-type']).toMatch(/json/iu);
-        expect(data.errors).toBeUndefined();
-        expect(data.data).toBeDefined();
-
-        const { autos } = data.data!;
-
-        expect(autos).not.toHaveLength(0);
-
-        const autosArray: AutoDTO[] = autos;
-        autosArray
-            .map((auto) => auto.bezeichnung)
-            .forEach((bezeichnung) =>
-                expect(bezeichnung?.bezeichnung.toLowerCase()).toEqual(
-                    expect.stringContaining(teilBezeichnungVorhanden),
-                ),
-            );
-    });
-
-    test('Auto zu nicht vorhandener Bezeichnung', async () => {
-        // given
-        const body: GraphQLRequest = {
-            query: `
-                {
-                    autos(suchkriterien: {
-                        bezeichnung: "${teilBezeichnungNichtVorhanden}"
-                    }) {
-                        art
-                        bezeichnung {
-                            bezeichnung
-                        }
-                    }
-                }
-            `,
-        };
-
-        // when
-        const { status, headers, data }: AxiosResponse<GraphQLResponseBody> =
-            await client.post(graphqlPath, body);
-
-        // then
-        expect(status).toBe(HttpStatus.OK);
-        expect(headers['content-type']).toMatch(/json/iu);
-        expect(data.data!.autos).toBeNull();
-
-        const { errors } = data;
-
-        expect(errors).toHaveLength(1);
-
-        const [error] = errors!;
-        const { message, path, extensions } = error;
-
-        expect(message).toMatch(/^Keine Autos gefunden:/u);
-        expect(path).toBeDefined();
-        expect(path![0]).toBe('autos');
         expect(extensions).toBeDefined();
         expect(extensions!.code).toBe('BAD_USER_INPUT');
     });

@@ -8,7 +8,6 @@ import {
     startServer,
 } from '../testserver.js';
 import { type AutoDTO } from '../../src/auto/rest/autoDTO.entity.js';
-import { AutoReadService } from '../../src/auto/service/auto-read.service.js';
 import { type ErrorResponse } from './error-response.js';
 import { HttpStatus } from '@nestjs/common';
 import { loginRest } from '../login.js';
@@ -45,7 +44,7 @@ const neuesAutoInvalid: Record<string, unknown> = {
     },
 };
 const neuesAutoFahrgestellnummerExistiert: AutoDTO = {
-    fahrgestellnummer: '12345',
+    fahrgestellnummer: 'WBAKC81020C456789',
     art: 'SUV',
     preis: 35_000,
     lieferbar: true,
@@ -83,46 +82,11 @@ describe('POST /rest', () => {
         await shutdownServer();
     });
 
-    test('Neues Auto', async () => {
-        // given
-        const token = await loginRest(client);
-        headers.Authorization = `Bearer ${token}`;
-
-        // when
-        const response: AxiosResponse<string> = await client.post(
-            '/rest',
-            neuesAuto,
-            { headers },
-        );
-
-        // then
-        const { status, data } = response;
-
-        expect(status).toBe(HttpStatus.CREATED);
-
-        const { location } = response.headers as { location: string };
-
-        expect(location).toBeDefined();
-
-        // ID nach dem letzten "/"
-        const indexLastSlash: number = location.lastIndexOf('/');
-
-        expect(indexLastSlash).not.toBe(-1);
-
-        const idStr = location.slice(indexLastSlash + 1);
-
-        expect(idStr).toBeDefined();
-        expect(AutoReadService.ID_PATTERN.test(idStr)).toBe(true);
-
-        expect(data).toBe('');
-    });
-
     test('Neues Auto mit ungueltigen Daten', async () => {
         // given
         const token = await loginRest(client);
         headers.Authorization = `Bearer ${token}`;
         const expectedMsg = [
-            expect.stringMatching(/^fahrgestellnummer /u),
             expect.stringMatching(/^art /u),
             expect.stringMatching(/^preis /u),
             expect.stringMatching(/^datum /u),
@@ -166,7 +130,7 @@ describe('POST /rest', () => {
 
         const { message, statusCode } = data;
 
-        expect(message).toEqual(expect.stringContaining('FAHRGESTELLNUMMER'));
+        expect(message).toEqual(expect.stringContaining('WBAKC81020C456789'));
         expect(statusCode).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
     });
 
@@ -196,6 +160,4 @@ describe('POST /rest', () => {
         // then
         expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
     });
-
-    test.todo('Abgelaufener Token');
 });

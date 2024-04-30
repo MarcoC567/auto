@@ -22,6 +22,7 @@ const bezeichnungNichtVorhanden = 'xx';
 // -----------------------------------------------------------------------------
 // Test-Suite
 
+// eslint-disable-next-line max-lines-per-function
 describe('GET /rest', () => {
     let baseURL: string;
     let client: AxiosInstance;
