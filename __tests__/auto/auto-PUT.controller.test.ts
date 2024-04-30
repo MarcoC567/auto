@@ -1,20 +1,3 @@
-/*
- * Copyright (C) 2016 - present Juergen Zimmermann, Hochschule Karlsruhe
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
-
 import { afterAll, beforeAll, describe, test } from '@jest/globals';
 import axios, { type AxiosInstance, type AxiosResponse } from 'axios';
 import {
@@ -24,7 +7,7 @@ import {
     shutdownServer,
     startServer,
 } from '../testserver.js';
-import { type BuchDtoOhneRef } from '../../src/buch/rest/buchDTO.entity.js';
+import { type AutoDtoOhneRef } from '../../src/auto/rest/autoDTO.entity.js';
 import { type ErrorResponse } from './error-response.js';
 import { HttpStatus } from '@nestjs/common';
 import { loginRest } from '../login.js';
@@ -32,54 +15,39 @@ import { loginRest } from '../login.js';
 // -----------------------------------------------------------------------------
 // T e s t d a t e n
 // -----------------------------------------------------------------------------
-const geaendertesBuch: BuchDtoOhneRef = {
-    isbn: '978-0-201-63361-0',
-    rating: 5,
-    art: 'KINDLE',
-    preis: 3333,
-    rabatt: 0.33,
+const geaendertesAuto: AutoDtoOhneRef = {
+    fahrgestellnummer: '12345',
+    art: 'SUV',
+    preis: 25_000,
     lieferbar: true,
-    datum: '2022-03-03',
-    homepage: 'https://geaendert.put.rest',
-    schlagwoerter: ['JAVASCRIPT'],
+    datum: '2024-03-20',
 };
 const idVorhanden = '30';
 
-const geaendertesBuchIdNichtVorhanden: BuchDtoOhneRef = {
-    isbn: '978-0-007-09732-6',
-    rating: 4,
-    art: 'DRUCKAUSGABE',
-    preis: 44.4,
-    rabatt: 0.044,
+const geaendertesAutoIdNichtVorhanden: AutoDtoOhneRef = {
+    fahrgestellnummer: '456321',
+    art: 'SUV',
+    preis: 9999,
     lieferbar: true,
-    datum: '2022-02-04',
-    homepage: 'https://acme.de',
-    schlagwoerter: ['JAVASCRIPT'],
+    datum: '2024-01-01',
 };
 const idNichtVorhanden = '999999';
 
-const geaendertesBuchInvalid: Record<string, unknown> = {
-    isbn: 'falsche-ISBN',
-    rating: -1,
-    art: 'UNSICHTBAR',
+const geaendertesAutoInvalid: Record<string, unknown> = {
+    fahrgestellnummer: 'falsche-Nummer',
+    art: 'COUPE',
     preis: -1,
-    rabatt: 2,
     lieferbar: true,
     datum: '12345-123-123',
-    titel: '?!',
-    homepage: 'anyHomepage',
+    bezeichnung: '?!',
 };
 
-const veraltesBuch: BuchDtoOhneRef = {
-    isbn: '978-0-007-09732-6',
-    rating: 1,
-    art: 'DRUCKAUSGABE',
-    preis: 44.4,
-    rabatt: 0.044,
+const veraltesAuto: AutoDtoOhneRef = {
+    fahrgestellnummer: '9876',
+    art: 'SUV',
+    preis: 10_000,
     lieferbar: true,
-    datum: '2022-02-04',
-    homepage: 'https://acme.de',
-    schlagwoerter: ['JAVASCRIPT'],
+    datum: '2024-02-04',
 };
 
 // -----------------------------------------------------------------------------
@@ -109,7 +77,7 @@ describe('PUT /rest/:id', () => {
         await shutdownServer();
     });
 
-    test('Vorhandenes Buch aendern', async () => {
+    test('Vorhandenes Auto aendern', async () => {
         // given
         const url = `/rest/${idVorhanden}`;
         const token = await loginRest(client);
@@ -119,7 +87,7 @@ describe('PUT /rest/:id', () => {
         // when
         const { status, data }: AxiosResponse<string> = await client.put(
             url,
-            geaendertesBuch,
+            geaendertesAuto,
             { headers },
         );
 
@@ -128,7 +96,7 @@ describe('PUT /rest/:id', () => {
         expect(data).toBe('');
     });
 
-    test('Nicht-vorhandenes Buch aendern', async () => {
+    test('Nicht-vorhandenes Auto aendern', async () => {
         // given
         const url = `/rest/${idNichtVorhanden}`;
         const token = await loginRest(client);
@@ -138,7 +106,7 @@ describe('PUT /rest/:id', () => {
         // when
         const { status }: AxiosResponse<string> = await client.put(
             url,
-            geaendertesBuchIdNichtVorhanden,
+            geaendertesAutoIdNichtVorhanden,
             { headers },
         );
 
@@ -146,25 +114,22 @@ describe('PUT /rest/:id', () => {
         expect(status).toBe(HttpStatus.NOT_FOUND);
     });
 
-    test('Vorhandenes Buch aendern, aber mit ungueltigen Daten', async () => {
+    test('Vorhandenes Auto aendern, aber mit ungueltigen Daten', async () => {
         // given
         const url = `/rest/${idVorhanden}`;
         const token = await loginRest(client);
         headers.Authorization = `Bearer ${token}`;
         headers['If-Match'] = '"0"';
         const expectedMsg = [
-            expect.stringMatching(/^isbn /u),
-            expect.stringMatching(/^rating /u),
+            expect.stringMatching(/^fahrgestellnummer /u),
             expect.stringMatching(/^art /u),
             expect.stringMatching(/^preis /u),
-            expect.stringMatching(/^rabatt /u),
             expect.stringMatching(/^datum /u),
-            expect.stringMatching(/^homepage /u),
         ];
 
         // when
         const { status, data }: AxiosResponse<Record<string, any>> =
-            await client.put(url, geaendertesBuchInvalid, { headers });
+            await client.put(url, geaendertesAutoInvalid, { headers });
 
         // then
         expect(status).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
@@ -177,7 +142,7 @@ describe('PUT /rest/:id', () => {
         expect(messages).toEqual(expect.arrayContaining(expectedMsg));
     });
 
-    test('Vorhandenes Buch aendern, aber ohne Versionsnummer', async () => {
+    test('Vorhandenes Auto aendern, aber ohne Versionsnummer', async () => {
         // given
         const url = `/rest/${idVorhanden}`;
         const token = await loginRest(client);
@@ -187,7 +152,7 @@ describe('PUT /rest/:id', () => {
         // when
         const { status, data }: AxiosResponse<string> = await client.put(
             url,
-            geaendertesBuch,
+            geaendertesAuto,
             { headers },
         );
 
@@ -196,7 +161,7 @@ describe('PUT /rest/:id', () => {
         expect(data).toBe('Header "If-Match" fehlt');
     });
 
-    test('Vorhandenes Buch aendern, aber mit alter Versionsnummer', async () => {
+    test('Vorhandenes Auto aendern, aber mit alter Versionsnummer', async () => {
         // given
         const url = `/rest/${idVorhanden}`;
         const token = await loginRest(client);
@@ -206,7 +171,7 @@ describe('PUT /rest/:id', () => {
         // when
         const { status, data }: AxiosResponse<ErrorResponse> = await client.put(
             url,
-            veraltesBuch,
+            veraltesAuto,
             { headers },
         );
 
@@ -219,7 +184,7 @@ describe('PUT /rest/:id', () => {
         expect(statusCode).toBe(HttpStatus.PRECONDITION_FAILED);
     });
 
-    test('Vorhandenes Buch aendern, aber ohne Token', async () => {
+    test('Vorhandenes Auto aendern, aber ohne Token', async () => {
         // given
         const url = `/rest/${idVorhanden}`;
         delete headers.Authorization;
@@ -228,7 +193,7 @@ describe('PUT /rest/:id', () => {
         // when
         const response: AxiosResponse<Record<string, any>> = await client.put(
             url,
-            geaendertesBuch,
+            geaendertesAuto,
             { headers },
         );
 
@@ -236,7 +201,7 @@ describe('PUT /rest/:id', () => {
         expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
     });
 
-    test('Vorhandenes Buch aendern, aber mit falschem Token', async () => {
+    test('Vorhandenes Auto aendern, aber mit falschem Token', async () => {
         // given
         const url = `/rest/${idVorhanden}`;
         const token = 'FALSCH';
@@ -245,7 +210,7 @@ describe('PUT /rest/:id', () => {
         // when
         const response: AxiosResponse<Record<string, any>> = await client.put(
             url,
-            geaendertesBuch,
+            geaendertesAuto,
             { headers },
         );
 

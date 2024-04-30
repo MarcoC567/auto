@@ -1,24 +1,8 @@
 // @eslint-community/eslint-disable-next-line eslint-comments/disable-enable-pair
 /* eslint-disable max-lines */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/*
- * Copyright (C) 2021 - present Juergen Zimmermann, Hochschule Karlsruhe
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
 
-import { type Buch, type BuchArt } from '../../src/buch/entity/buch.entity.js';
+import { type Auto, type AutoArt } from '../../src/auto/entity/auto.entity.js';
 import { afterAll, beforeAll, describe, expect, test } from '@jest/globals';
 import axios, { type AxiosInstance, type AxiosResponse } from 'axios';
 import {
@@ -38,26 +22,18 @@ export interface GraphQLResponseBody {
     errors?: readonly [GraphQLFormattedError];
 }
 
-type BuchDTO = Omit<
-    Buch,
-    'abbildungen' | 'aktualisiert' | 'erzeugt' | 'rabatt'
-> & {
-    rabatt: string;
-};
+type AutoDTO = Omit<Auto, 'zubehoere' | 'aktualisiert' | 'erzeugt'>;
 
 // -----------------------------------------------------------------------------
 // T e s t d a t e n
 // -----------------------------------------------------------------------------
 const idVorhanden = '1';
 
-const titelVorhanden = 'Alpha';
-const teilTitelVorhanden = 'a';
-const teilTitelNichtVorhanden = 'abc';
+const bezeichnungVorhanden = 'Alpha';
+const teilBezeichnungVorhanden = 'a';
+const teilBezeichnungNichtVorhanden = 'abc';
 
-const isbnVorhanden = '978-3-897-22583-1';
-
-const ratingVorhanden = 2;
-const ratingNichtVorhanden = 99;
+const fahrgestellnummerVorhanden = '978-3-897-22583-1';
 
 // -----------------------------------------------------------------------------
 // T e s t s
@@ -85,25 +61,21 @@ describe('GraphQL Queries', () => {
         await shutdownServer();
     });
 
-    test('Buch zu vorhandener ID', async () => {
+    test('Auto zu vorhandener ID', async () => {
         // given
         const body: GraphQLRequest = {
             query: `
                 {
-                    buch(id: "${idVorhanden}") {
+                    auto(id: "${idVorhanden}") {
                         version
-                        isbn
-                        rating
+                        fahrgestellnummer
                         art
                         preis
                         lieferbar
                         datum
-                        homepage
-                        schlagwoerter
-                        titel {
-                            titel
+                        bezeichnung {
+                            bezeichnung
                         }
-                        rabatt(short: true)
                     }
                 }
             `,
@@ -119,23 +91,23 @@ describe('GraphQL Queries', () => {
         expect(data.errors).toBeUndefined();
         expect(data.data).toBeDefined();
 
-        const { buch } = data.data!;
-        const result: BuchDTO = buch;
+        const { auto } = data.data!;
+        const result: AutoDTO = auto;
 
-        expect(result.titel?.titel).toMatch(/^\w/u);
+        expect(result.bezeichnung?.bezeichnung).toMatch(/^\w/u);
         expect(result.version).toBeGreaterThan(-1);
         expect(result.id).toBeUndefined();
     });
 
-    test('Buch zu nicht-vorhandener ID', async () => {
+    test('Auto zu nicht-vorhandener ID', async () => {
         // given
         const id = '999999';
         const body: GraphQLRequest = {
             query: `
                 {
-                    buch(id: "${id}") {
-                        titel {
-                            titel
+                    auto(id: "${id}") {
+                        bezeichnung {
+                            bezeichnung
                         }
                     }
                 }
@@ -149,7 +121,7 @@ describe('GraphQL Queries', () => {
         // then
         expect(status).toBe(HttpStatus.OK);
         expect(headers['content-type']).toMatch(/json/iu);
-        expect(data.data!.buch).toBeNull();
+        expect(data.data!.auto).toBeNull();
 
         const { errors } = data;
 
@@ -158,24 +130,24 @@ describe('GraphQL Queries', () => {
         const [error] = errors!;
         const { message, path, extensions } = error;
 
-        expect(message).toBe(`Es gibt kein Buch mit der ID ${id}.`);
+        expect(message).toBe(`Es gibt kein Auto mit der ID ${id}.`);
         expect(path).toBeDefined();
-        expect(path![0]).toBe('buch');
+        expect(path![0]).toBe('auto');
         expect(extensions).toBeDefined();
         expect(extensions!.code).toBe('BAD_USER_INPUT');
     });
 
-    test('Buch zu vorhandenem Titel', async () => {
+    test('Auto zu vorhandener Bezeichnung', async () => {
         // given
         const body: GraphQLRequest = {
             query: `
                 {
-                    buecher(suchkriterien: {
-                        titel: "${titelVorhanden}"
+                    autos(suchkriterien: {
+                        bezeichnung: "${bezeichnungVorhanden}"
                     }) {
                         art
-                        titel {
-                            titel
+                        bezeichnung {
+                            bezeichnung
                         }
                     }
                 }
@@ -193,29 +165,29 @@ describe('GraphQL Queries', () => {
 
         expect(data.data).toBeDefined();
 
-        const { buecher } = data.data!;
+        const { autos } = data.data!;
 
-        expect(buecher).not.toHaveLength(0);
+        expect(autos).not.toHaveLength(0);
 
-        const buecherArray: BuchDTO[] = buecher;
+        const autosArray: AutoDTO[] = autos;
 
-        expect(buecherArray).toHaveLength(1);
+        expect(autosArray).toHaveLength(1);
 
-        const [buch] = buecherArray;
+        const [auto] = autosArray;
 
-        expect(buch!.titel?.titel).toBe(titelVorhanden);
+        expect(auto!.bezeichnung?.bezeichnung).toBe(bezeichnungVorhanden);
     });
 
-    test('Buch zu vorhandenem Teil-Titel', async () => {
+    test('Auto zu vorhandener Teil-Bezeichnung', async () => {
         // given
         const body: GraphQLRequest = {
             query: `
                 {
-                    buecher(suchkriterien: {
-                        titel: "${teilTitelVorhanden}"
+                    autos(suchkriterien: {
+                        bezeichnung: "${teilBezeichnungVorhanden}"
                     }) {
-                        titel {
-                            titel
+                        bezeichnung {
+                            bezeichnung
                         }
                     }
                 }
@@ -232,31 +204,31 @@ describe('GraphQL Queries', () => {
         expect(data.errors).toBeUndefined();
         expect(data.data).toBeDefined();
 
-        const { buecher } = data.data!;
+        const { autos } = data.data!;
 
-        expect(buecher).not.toHaveLength(0);
+        expect(autos).not.toHaveLength(0);
 
-        const buecherArray: BuchDTO[] = buecher;
-        buecherArray
-            .map((buch) => buch.titel)
-            .forEach((titel) =>
-                expect(titel?.titel.toLowerCase()).toEqual(
-                    expect.stringContaining(teilTitelVorhanden),
+        const autosArray: AutoDTO[] = autos;
+        autosArray
+            .map((auto) => auto.bezeichnung)
+            .forEach((bezeichnung) =>
+                expect(bezeichnung?.bezeichnung.toLowerCase()).toEqual(
+                    expect.stringContaining(teilBezeichnungVorhanden),
                 ),
             );
     });
 
-    test('Buch zu nicht vorhandenem Titel', async () => {
+    test('Auto zu nicht vorhandener Bezeichnung', async () => {
         // given
         const body: GraphQLRequest = {
             query: `
                 {
-                    buecher(suchkriterien: {
-                        titel: "${teilTitelNichtVorhanden}"
+                    autos(suchkriterien: {
+                        bezeichnung: "${teilBezeichnungNichtVorhanden}"
                     }) {
                         art
-                        titel {
-                            titel
+                        bezeichnung {
+                            bezeichnung
                         }
                     }
                 }
@@ -270,7 +242,7 @@ describe('GraphQL Queries', () => {
         // then
         expect(status).toBe(HttpStatus.OK);
         expect(headers['content-type']).toMatch(/json/iu);
-        expect(data.data!.buecher).toBeNull();
+        expect(data.data!.autos).toBeNull();
 
         const { errors } = data;
 
@@ -279,24 +251,24 @@ describe('GraphQL Queries', () => {
         const [error] = errors!;
         const { message, path, extensions } = error;
 
-        expect(message).toMatch(/^Keine Buecher gefunden:/u);
+        expect(message).toMatch(/^Keine Autos gefunden:/u);
         expect(path).toBeDefined();
-        expect(path![0]).toBe('buecher');
+        expect(path![0]).toBe('autos');
         expect(extensions).toBeDefined();
         expect(extensions!.code).toBe('BAD_USER_INPUT');
     });
 
-    test('Buch zu vorhandener ISBN-Nummer', async () => {
+    test('Auto zu vorhandener Fahrgestellnummer-Nummer', async () => {
         // given
         const body: GraphQLRequest = {
             query: `
                 {
-                    buecher(suchkriterien: {
-                        isbn: "${isbnVorhanden}"
+                    autos(suchkriterien: {
+                        fahrgestellnummer: "${fahrgestellnummerVorhanden}"
                     }) {
-                        isbn
-                        titel {
-                            titel
+                        fahrgestellnummer
+                        bezeichnung {
+                            bezeichnung
                         }
                     }
                 }
@@ -314,117 +286,33 @@ describe('GraphQL Queries', () => {
 
         expect(data.data).toBeDefined();
 
-        const { buecher } = data.data!;
+        const { autos } = data.data!;
 
-        expect(buecher).not.toHaveLength(0);
+        expect(autos).not.toHaveLength(0);
 
-        const buecherArray: BuchDTO[] = buecher;
+        const autosArray: AutoDTO[] = autos;
 
-        expect(buecherArray).toHaveLength(1);
+        expect(autosArray).toHaveLength(1);
 
-        const [buch] = buecherArray;
-        const { isbn, titel } = buch!;
+        const [auto] = autosArray;
+        const { fahrgestellnummer, bezeichnung } = auto!;
 
-        expect(isbn).toBe(isbnVorhanden);
-        expect(titel?.titel).toBeDefined();
+        expect(fahrgestellnummer).toBe(fahrgestellnummerVorhanden);
+        expect(bezeichnung?.bezeichnung).toBeDefined();
     });
 
-    test('Buecher zu vorhandenem "rating"', async () => {
+    test('Autos zur Art "SUV"', async () => {
         // given
+        const autoArt: AutoArt = 'SUV';
         const body: GraphQLRequest = {
             query: `
                 {
-                    buecher(suchkriterien: {
-                        rating: ${ratingVorhanden},
-                        titel: "${teilTitelVorhanden}"
-                    }) {
-                        rating
-                        titel {
-                            titel
-                        }
-                    }
-                }
-            `,
-        };
-
-        // when
-        const { status, headers, data }: AxiosResponse<GraphQLResponseBody> =
-            await client.post(graphqlPath, body);
-
-        // then
-        expect(status).toBe(HttpStatus.OK);
-        expect(headers['content-type']).toMatch(/json/iu);
-        expect(data.errors).toBeUndefined();
-
-        expect(data.data).toBeDefined();
-
-        const { buecher } = data.data!;
-
-        expect(buecher).not.toHaveLength(0);
-
-        const buecherArray: BuchDTO[] = buecher;
-
-        buecherArray.forEach((buch) => {
-            const { rating, titel } = buch;
-
-            expect(rating).toBe(ratingVorhanden);
-            expect(titel?.titel.toLowerCase()).toEqual(
-                expect.stringContaining(teilTitelVorhanden),
-            );
-        });
-    });
-
-    test('Kein Buch zu nicht-vorhandenem "rating"', async () => {
-        // given
-        const body: GraphQLRequest = {
-            query: `
-                {
-                    buecher(suchkriterien: {
-                        rating: ${ratingNichtVorhanden}
-                    }) {
-                        titel {
-                            titel
-                        }
-                    }
-                }
-            `,
-        };
-
-        // when
-        const { status, headers, data }: AxiosResponse<GraphQLResponseBody> =
-            await client.post(graphqlPath, body);
-
-        // then
-        expect(status).toBe(HttpStatus.OK);
-        expect(headers['content-type']).toMatch(/json/iu);
-        expect(data.data!.buecher).toBeNull();
-
-        const { errors } = data;
-
-        expect(errors).toHaveLength(1);
-
-        const [error] = errors!;
-        const { message, path, extensions } = error;
-
-        expect(message).toMatch(/^Keine Buecher gefunden:/u);
-        expect(path).toBeDefined();
-        expect(path![0]).toBe('buecher');
-        expect(extensions).toBeDefined();
-        expect(extensions!.code).toBe('BAD_USER_INPUT');
-    });
-
-    test('Buecher zur Art "KINDLE"', async () => {
-        // given
-        const buchArt: BuchArt = 'KINDLE';
-        const body: GraphQLRequest = {
-            query: `
-                {
-                    buecher(suchkriterien: {
-                        art: ${buchArt}
+                    autos(suchkriterien: {
+                        art: ${autoArt}
                     }) {
                         art
-                        titel {
-                            titel
+                        bezeichnung {
+                            bezeichnung
                         }
                     }
                 }
@@ -442,31 +330,31 @@ describe('GraphQL Queries', () => {
 
         expect(data.data).toBeDefined();
 
-        const { buecher } = data.data!;
+        const { autos } = data.data!;
 
-        expect(buecher).not.toHaveLength(0);
+        expect(autos).not.toHaveLength(0);
 
-        const buecherArray: BuchDTO[] = buecher;
+        const autosArray: AutoDTO[] = autos;
 
-        buecherArray.forEach((buch) => {
-            const { art, titel } = buch;
+        autosArray.forEach((auto) => {
+            const { art, bezeichnung } = auto;
 
-            expect(art).toBe(buchArt);
-            expect(titel?.titel).toBeDefined();
+            expect(art).toBe(autoArt);
+            expect(bezeichnung?.bezeichnung).toBeDefined();
         });
     });
 
-    test('Buecher zur einer ungueltigen Art', async () => {
+    test('Autos zur einer ungueltigen Art', async () => {
         // given
-        const buchArt = 'UNGUELTIG';
+        const autoArt = 'UNGUELTIG';
         const body: GraphQLRequest = {
             query: `
                 {
-                    buecher(suchkriterien: {
-                        art: ${buchArt}
+                    autos(suchkriterien: {
+                        art: ${autoArt}
                     }) {
-                        titel {
-                            titel
+                        bezeichnung {
+                            bezeichnung
                         }
                     }
                 }
@@ -493,17 +381,17 @@ describe('GraphQL Queries', () => {
         expect(extensions!.code).toBe('GRAPHQL_VALIDATION_FAILED');
     });
 
-    test('Buecher mit lieferbar=true', async () => {
+    test('Autos mit lieferbar=true', async () => {
         // given
         const body: GraphQLRequest = {
             query: `
                 {
-                    buecher(suchkriterien: {
+                    autos(suchkriterien: {
                         lieferbar: true
                     }) {
                         lieferbar
-                        titel {
-                            titel
+                        bezeichnung {
+                            bezeichnung
                         }
                     }
                 }
@@ -521,17 +409,17 @@ describe('GraphQL Queries', () => {
 
         expect(data.data).toBeDefined();
 
-        const { buecher } = data.data!;
+        const { autos } = data.data!;
 
-        expect(buecher).not.toHaveLength(0);
+        expect(autos).not.toHaveLength(0);
 
-        const buecherArray: BuchDTO[] = buecher;
+        const autosArray: AutoDTO[] = autos;
 
-        buecherArray.forEach((buch) => {
-            const { lieferbar, titel } = buch;
+        autosArray.forEach((auto) => {
+            const { lieferbar, bezeichnung } = auto;
 
             expect(lieferbar).toBe(true);
-            expect(titel?.titel).toBeDefined();
+            expect(bezeichnung?.bezeichnung).toBeDefined();
         });
     });
 });
