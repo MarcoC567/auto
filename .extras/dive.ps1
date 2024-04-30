@@ -36,8 +36,8 @@ if ($versionMinimum -gt $versionCurrent) {
 $host.ui.RawUI.WindowTitle = 'dive'
 
 $diveVersion = 'v0.12.0'
-$imagePrefix = 'juergenzimmermann/'
-$imageBase = 'buch'
+$imagePrefix = 'marcocatoir/'
+$imageBase = 'auto'
 $imageTag = "2024.04.0-$base"
 $image = "$imagePrefix${imageBase}:$imageTag"
 

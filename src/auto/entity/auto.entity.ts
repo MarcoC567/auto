@@ -60,8 +60,6 @@ export class Auto {
     @ApiProperty({ example: '2021-01-31' })
     readonly datum: Date | string | undefined;
 
-    // schlagwoerter ?
-
     @OneToOne(() => Bezeichnung, (bezeichnung) => bezeichnung.auto, {
         cascade: ['insert', 'remove'],
     })

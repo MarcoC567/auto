@@ -4,12 +4,12 @@ import {
     IsArray,
     IsBoolean,
     IsISO8601,
-    IsInt,
+    // IsInt,
     IsOptional,
     IsPositive,
     Matches,
-    Max,
-    Min,
+    // Max,
+    // Min,
     ValidateNested,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
@@ -18,20 +18,12 @@ import { BezeichnungDTO } from './bezeichnungDTO.entity.js';
 import { Type } from 'class-transformer';
 import { ZubehoerDTO } from './zubehoerDTO.entity.js';
 
-export const MAX_RATING = 5;
-
 /**
  * Entity-Klasse für Autos ohne TypeORM und ohne Referenzen.
  */
 export class AutoDtoOhneRef {
     @ApiProperty({ example: 'W0L000051T2123456', type: String })
     readonly fahrgestellnummer!: string;
-
-    @IsInt()
-    @Min(0)
-    @Max(MAX_RATING)
-    @ApiProperty({ example: 5, type: Number })
-    readonly rating: number | undefined;
 
     @Matches(/^SUV$|^LIMOUSINE$/u)
     @IsOptional()
