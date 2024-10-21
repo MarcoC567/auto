@@ -1,9 +1,3 @@
-// eslint-disable-next-line @eslint-community/eslint-comments/disable-enable-pair
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-// eslint-disable-next-line @eslint-community/eslint-comments/disable-enable-pair
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-// eslint-disable-next-line @eslint-community/eslint-comments/disable-enable-pair
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /**
  * Das Modul besteht aus der Klasse {@linkcode QueryBuilder}.
  * @packageDocumentation
@@ -134,6 +128,7 @@ export class QueryBuilder {
         // Restliche Properties als Key-Value-Paare: Vergleiche auf Gleichheit
         Object.keys(props).forEach((key) => {
             const param: Record<string, any> = {};
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
             param[key] = (props as Record<string, any>)[key]; // eslint-disable-line security/detect-object-injection
             queryBuilder = useWhere
                 ? queryBuilder.where(
