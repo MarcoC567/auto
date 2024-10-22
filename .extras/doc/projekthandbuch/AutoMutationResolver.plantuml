@@ -43,46 +43,44 @@ package nest-keycloak-connect {
   hide Roles circle
 }
 
-package buch #DDDDDD {
+package auto #DDDDDD {
   package entity #FFFFFF {
-    class Buch <<entity>>
+    class Auto <<entity>>
   }
 
   package service #FFFFFF {
-    class BuchWriteService << control >>
+    class AutoWriteService << control >>
   }
 
-  class "type BuchDTO = Omit<Buch, 'abbildungen' | 'aktualisiert' | 'erzeugt'" as BuchDTO
-  hide BuchDTO circle
+  class "type AutoDTO = Omit<Auto, 'zubehoer' | 'aktualisiert' | 'erzeugt'" as AutoDTO
+  hide AutoDTO circle
 
     interface IdInput {
         id: number
     }
 
-  class BuchMutationResolver << control >> << @Resolver() >> << @UseGuards() >> << @UseInterceptors() >> {
-    + @Mutation() @Roles() async create(@Args() buchDTO: BuchDTO): Promise<number>
-    + @Mutation() @Roles() async update(@Args() buchDTO: BuchDTO): Promise<number>
+  class AutoMutationResolver << control >> << @Resolver() >> << @UseGuards() >> << @UseInterceptors() >> {
+    + @Mutation() @Roles() async create(@Args() autoDTO: AutoDTO): Promise<number>
+    + @Mutation() @Roles() async update(@Args() autoDTO: AutoDTO): Promise<number>
     + @Mutation() @Roles() async delete(@Args() id: IdInput): Promise<boolean>
   }
 
-  BuchMutationResolver o-down-> "1" BuchWriteService : service
+  AutoMutationResolver o-down-> "1" AutoWriteService : service
 
-  BuchMutationResolver ..> Buch
-  BuchMutationResolver ..> BuchDTO
-  BuchMutationResolver ..> IdInput
-  BuchDTO .up.> Buch
-  BuchMutationResolver ..> Promise
-  BuchMutationResolver ..> Resolver
+  AutoMutationResolver ..> Auto
+  AutoMutationResolver ..> AutoDTO
+  AutoMutationResolver ..> IdInput
+  AutoDTO .up.> Auto
+  AutoMutationResolver ..> Promise
+  AutoMutationResolver ..> Resolver
 
-  BuchMutationResolver .up.> AuthGuard
-  BuchMutationResolver .up.> Roles
+  AutoMutationResolver .up.> AuthGuard
+  AutoMutationResolver .up.> Roles
 
-  BuchDTO .[hidden].> Promise
-  BuchDTO .[hidden].> Resolver
+  AutoDTO .[hidden].> Promise
+  AutoDTO .[hidden].> Resolver
 }
 
 hide empty members
-
-footer (c) Juergen Zimmermann
 
 @enduml
