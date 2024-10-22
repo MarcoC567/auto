@@ -5,7 +5,7 @@ import {
     ManyToOne,
     PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Auto } from './auto.entity';
+import { Auto } from './auto.entity.js';
 
 @Entity()
 export class Zubehoer {
