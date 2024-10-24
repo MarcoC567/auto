@@ -14,11 +14,10 @@
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import { UseFilters, UseInterceptors } from '@nestjs/common';
-import { Args, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
+import { Args, Query, Resolver } from '@nestjs/graphql';
 import { Public } from 'nest-keycloak-connect';
 import { getLogger } from '../../logger/logger.js';
 import { ResponseTimeInterceptor } from '../../logger/response-time.interceptor.js';
-import { Auto } from '../entity/auto.entity.js';
 import { AutoReadService } from '../service/auto-read.service.js';
 import { type Suchkriterien } from '../service/suchkriterien.js';
 import { HttpExceptionFilter } from './http-exception.filter.js';

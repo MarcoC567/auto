@@ -137,7 +137,6 @@ export class AutoMutationResolver {
             datum: autoDTO.datum,
             bezeichnung,
             zubehoere,
-            file: undefined,
             erzeugt: new Date(),
             aktualisiert: new Date(),
         };
@@ -158,7 +157,6 @@ export class AutoMutationResolver {
             datum: autoDTO.datum,
             bezeichnung: undefined,
             zubehoere: undefined,
-            file: undefined,
             erzeugt: undefined,
             aktualisiert: new Date(),
         };

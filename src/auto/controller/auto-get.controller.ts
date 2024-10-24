@@ -238,7 +238,7 @@ export class AutoGetController {
         // HATEOAS mit Atom Links und HAL (= Hypertext Application Language)
         const autoModel = this.#toModel(auto, req);
         this.#logger.debug('getById: autoModel=%o', autoModel);
-        return res.contentType(APPLICATION_HAL_JSON).json(autoModel); //TODO zu beschreibung wechseln?
+        return res.contentType(APPLICATION_HAL_JSON).json(autoModel); // TODO zu beschreibung wechseln?
     }
 
     /**

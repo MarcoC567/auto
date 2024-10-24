@@ -258,7 +258,6 @@ export class AutoWriteController {
             datum: autoDTO.datum,
             bezeichnung: undefined,
             zubehoere: undefined,
-            file: undefined,
             erzeugt: undefined,
             aktualisiert: new Date(),
         };

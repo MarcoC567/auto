@@ -23,17 +23,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
-    ArrayUnique,
     IsArray,
     IsBoolean,
     IsISO8601,
-    IsInt,
     IsOptional,
     IsPositive,
-    IsUrl,
     Matches,
-    Max,
-    Min,
     ValidateNested,
 } from 'class-validator';
 import { type AutoArt } from '../entity/auto.entity.js';
