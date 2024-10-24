@@ -26,7 +26,6 @@ import {
     ArrayUnique,
     IsArray,
     IsBoolean,
-    IsFahrgestellnummer,
     IsISO8601,
     IsInt,
     IsOptional,
@@ -38,7 +37,7 @@ import {
     ValidateNested,
 } from 'class-validator';
 import { type AutoArt } from '../entity/auto.entity.js';
-import { ZubehoerDTO } from './abbildungDTO.entity.js';
+import { ZubehoerDTO } from './zubehoerDTO.entity.js';
 import { BezeichnungDTO } from './bezeichnungDTO.entity.js';
 
 export const MAX_RATING = 5;
@@ -48,7 +47,6 @@ export const MAX_RATING = 5;
  */
 export class AutoDtoOhneRef {
     // https://www.oreilly.com/library/view/regular-expressions-cookbook/9781449327453/ch04s13.html
-    @IsFahrgestellnummer(13)
     @ApiProperty({ example: '978-0-007-00644-1', type: String })
     readonly fahrgestellnummer!: string;
 
@@ -71,11 +69,6 @@ export class AutoDtoOhneRef {
     @IsOptional()
     @ApiProperty({ example: '2021-01-31' })
     readonly datum: Date | string | undefined;
-
-    @IsUrl()
-    @IsOptional()
-    @ApiProperty({ example: 'https://test.de/', type: String })
-    readonly homepage: string | undefined;
 }
 
 /**

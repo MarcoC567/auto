@@ -50,7 +50,7 @@ import { AuthGuard, Roles } from 'nest-keycloak-connect';
 import { paths } from '../../config/paths.js';
 import { getLogger } from '../../logger/logger.js';
 import { ResponseTimeInterceptor } from '../../logger/response-time.interceptor.js';
-import { type Zubehoer } from '../entity/abbildung.entity.js';
+import { type Zubehoer } from '../entity/zubehoer.entity.js';
 import { type Auto } from '../entity/auto.entity.js';
 import { type Bezeichnung } from '../entity/bezeichnung.entity.js';
 import { AutoWriteService } from '../service/auto-write.service.js';
@@ -83,7 +83,7 @@ export class AutoWriteController {
      * dass damit das neu angelegte Auto abgerufen werden kann.
      *
      * Falls Constraints verletzt sind, wird der Statuscode `400` (`Bad Request`)
-     * gesetzt und genauso auch wenn der Bezeichnung oder die Fahrgestellnummer-Nummer bereits
+     * gesetzt und genauso auch wenn der Bezeichnung oder die ISBN-Nummer bereits
      * existieren.
      *
      * @param autoDTO JSON-Daten für ein Auto im Request-Body.
@@ -128,7 +128,7 @@ export class AutoWriteController {
      * required`) gesetzt; und falls sie nicht korrekt ist, der Statuscode `412`
      * (`Precondition failed`). Falls Constraints verletzt sind, wird der
      * Statuscode `400` (`Bad Request`) gesetzt und genauso auch wenn der neue
-     * Bezeichnung oder die neue Fahrgestellnummer-Nummer bereits existieren.
+     * Bezeichnung oder die neue ISBN-Nummer bereits existieren.
      *
      * @param autoDTO Autodaten im Body des Request-Objekts.
      * @param id Pfad-Paramater für die ID.
@@ -215,14 +215,14 @@ export class AutoWriteController {
             zusatz: bezeichnungDTO.zusatz,
             auto: undefined,
         };
-        const zubehoere = autoDTO.zubehoere?.map((abbildungDTO) => {
-            const abbildung: Zubehoer = {
+        const zubehoere = autoDTO.zubehoere?.map((zubehoerDTO) => {
+            const zubehoer: Zubehoer = {
                 id: undefined,
-                name: abbildungDTO.name,
-                beschreibung: abbildungDTO.beschreibung,
+                name: zubehoerDTO.name,
+                beschreibung: zubehoerDTO.beschreibung,
                 auto: undefined,
             };
-            return abbildung;
+            return zubehoer;
         });
         const auto = {
             id: undefined,
@@ -234,14 +234,15 @@ export class AutoWriteController {
             datum: autoDTO.datum,
             bezeichnung,
             zubehoere,
+            file: undefined,
             erzeugt: new Date(),
             aktualisiert: new Date(),
         };
 
         // Rueckwaertsverweise
         auto.bezeichnung.auto = auto;
-        auto.zubehoere?.forEach((abbildung) => {
-            abbildung.auto = auto;
+        auto.zubehoere?.forEach((zubehoer) => {
+            zubehoer.auto = auto;
         });
         return auto;
     }
@@ -257,6 +258,7 @@ export class AutoWriteController {
             datum: autoDTO.datum,
             bezeichnung: undefined,
             zubehoere: undefined,
+            file: undefined,
             erzeugt: undefined,
             aktualisiert: new Date(),
         };

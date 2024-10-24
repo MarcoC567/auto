@@ -21,7 +21,7 @@ import { AuthGuard, Roles } from 'nest-keycloak-connect';
 import { getLogger } from '../../logger/logger.js';
 import { ResponseTimeInterceptor } from '../../logger/response-time.interceptor.js';
 import { AutoDTO } from '../controller/autoDTO.entity.js';
-import { type Zubehoer } from '../entity/abbildung.entity.js';
+import { type Zubehoer } from '../entity/zubehoer.entity.js';
 import { type Auto } from '../entity/auto.entity.js';
 import { type Bezeichnung } from '../entity/bezeichnung.entity.js';
 import { AutoWriteService } from '../service/auto-write.service.js';
@@ -118,14 +118,14 @@ export class AutoMutationResolver {
             auto: undefined,
         };
         // "Optional Chaining" ab ES2020
-        const zubehoere = autoDTO.zubehoere?.map((abbildungDTO) => {
-            const abbildung: Zubehoer = {
+        const zubehoere = autoDTO.zubehoere?.map((zubehoerDTO) => {
+            const zubehoer: Zubehoer = {
                 id: undefined,
-                name: abbildungDTO.name,
-                beschreibung: abbildungDTO.beschreibung,
+                name: zubehoerDTO.name,
+                beschreibung: zubehoerDTO.beschreibung,
                 auto: undefined,
             };
-            return abbildung;
+            return zubehoer;
         });
         const auto: Auto = {
             id: undefined,
@@ -137,6 +137,7 @@ export class AutoMutationResolver {
             datum: autoDTO.datum,
             bezeichnung,
             zubehoere,
+            file: undefined,
             erzeugt: new Date(),
             aktualisiert: new Date(),
         };
@@ -157,6 +158,7 @@ export class AutoMutationResolver {
             datum: autoDTO.datum,
             bezeichnung: undefined,
             zubehoere: undefined,
+            file: undefined,
             erzeugt: undefined,
             aktualisiert: new Date(),
         };
@@ -164,7 +166,7 @@ export class AutoMutationResolver {
 
     // #errorMsgCreateAuto(err: CreateError) {
     //     switch (err.type) {
-    //         case 'IsbnExists': {
+    //         case 'FahrgestellnummerExists': {
     //             return `Die Fahrgestellnummer ${err.fahrgestellnummer} existiert bereits`;
     //         }
     //         default: {

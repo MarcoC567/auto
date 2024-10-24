@@ -80,6 +80,7 @@ export type BezeichnungModel = Omit<Bezeichnung, 'auto' | 'id'>;
 export type AutoModel = Omit<
     Auto,
     | 'zubehoere'
+    | 'file'
     | 'aktualisiert'
     | 'erzeugt'
     | 'id'
@@ -237,7 +238,7 @@ export class AutoGetController {
         // HATEOAS mit Atom Links und HAL (= Hypertext Application Language)
         const autoModel = this.#toModel(auto, req);
         this.#logger.debug('getById: autoModel=%o', autoModel);
-        return res.beschreibung(APPLICATION_HAL_JSON).json(autoModel);
+        return res.contentType(APPLICATION_HAL_JSON).json(autoModel); //TODO zu beschreibung wechseln?
     }
 
     /**
@@ -282,7 +283,7 @@ export class AutoGetController {
         this.#logger.debug('get: autosModel=%o', autosModel);
 
         const result: AutosModel = { _embedded: { autos: autosModel } };
-        return res.beschreibung(APPLICATION_HAL_JSON).json(result).send();
+        return res.contentType(APPLICATION_HAL_JSON).json(result).send(); //TODO zu beschreibung wechseln?
     }
 
     #toModel(auto: Auto, req: Request, all = true) {
