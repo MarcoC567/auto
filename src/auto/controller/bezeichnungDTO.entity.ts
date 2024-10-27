@@ -24,17 +24,23 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional, Matches, MaxLength } from 'class-validator';
 
 /**
- * Entity-Klasse für Bezeichnung ohne TypeORM.
+
+ * Entity-Klasse für die Bezeichnung ohne TypeORM.
+
  */
 export class BezeichnungDTO {
     @Matches(String.raw`^\w.*`)
     @MaxLength(40)
-    @ApiProperty({ example: 'Der Bezeichnung', type: String })
+
+    @ApiProperty({ example: 'Die Bezeichnung', type: String })
+
     readonly bezeichnung!: string;
 
     @IsOptional()
     @MaxLength(40)
-    @ApiProperty({ example: 'Der Zusatz', type: String })
+
+    @ApiProperty({ example: 'Zusatz', type: String })
+
     readonly zusatz: string | undefined;
 }
 /* eslint-enable @typescript-eslint/no-magic-numbers */

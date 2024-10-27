@@ -1,24 +1,10 @@
-// Copyright (C) 2021 - present Juergen Zimmermann, Hochschule Karlsruhe
-//
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program. If not, see <https://www.gnu.org/licenses/>.
+
 
 /**
  * Das Modul besteht aus der Controller-Klasse für Lesen an der REST-Schnittstelle.
  * @packageDocumentation
  */
 
-/* eslint-disable max-lines */
 // eslint-disable-next-line max-classes-per-file
 import {
     Controller,
@@ -79,13 +65,9 @@ export type BezeichnungModel = Omit<Bezeichnung, 'auto' | 'id'>;
 /** Auto-Objekt mit HATEOAS-Links */
 export type AutoModel = Omit<
     Auto,
-    | 'zubehoere'
-    | 'file'
-    | 'aktualisiert'
-    | 'erzeugt'
-    | 'id'
-    | 'bezeichnung'
-    | 'version'
+
+    'zubehoere' | 'aktualisiert' | 'erzeugt' | 'id' | 'bezeichnung' | 'version'
+
 > & {
     bezeichnung: BezeichnungModel;
     // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -139,7 +121,8 @@ export class AutoQuery implements Suchkriterien {
 const APPLICATION_HAL_JSON = 'application/hal+json';
 
 /**
- * Die Controller-Klasse für die Verwaltung von Bücher.
+
+ * Die Controller-Klasse für die Verwaltung von Autos.
  */
 // Decorator in TypeScript, zur Standardisierung in ES vorgeschlagen (stage 3)
 // https://devblogs.microsoft.com/typescript/announcing-typescript-5-0-beta/#decorators
@@ -167,7 +150,9 @@ export class AutoGetController {
      * Ein Auto wird asynchron anhand seiner ID als Pfadparameter gesucht.
      *
      * Falls es ein solches Auto gibt und `If-None-Match` im Request-Header
-     * auf die aktuelle Version des Autoes gesetzt war, wird der Statuscode
+
+     * auf die aktuelle Version des Autos gesetzt war, wird der Statuscode
+
      * `304` (`Not Modified`) zurückgeliefert. Falls `If-None-Match` nicht
      * gesetzt ist oder eine veraltete Version enthält, wird das gefundene
      * Auto im Rumpf des Response als JSON-Datensatz mit Atom-Links für HATEOAS
@@ -238,6 +223,15 @@ export class AutoGetController {
         // HATEOAS mit Atom Links und HAL (= Hypertext Application Language)
         const autoModel = this.#toModel(auto, req);
         this.#logger.debug('getById: autoModel=%o', autoModel);
+
+        return res.contentType(APPLICATION_HAL_JSON).json(autoModel);
+    }
+
+    /**
+     * Autos werden mit Query-Parametern asynchron gesucht. Falls es mindestens
+     * ein solches Auto gibt, wird der Statuscode `200` (`OK`) gesetzt. Im Rumpf
+     * des Response ist das JSON-Array mit den gefundenen Autos, die jeweils
+=======
         return res.contentType(APPLICATION_HAL_JSON).json(autoModel); // TODO zu beschreibung wechseln?
     }
 
@@ -245,12 +239,10 @@ export class AutoGetController {
      * Bücher werden mit Query-Parametern asynchron gesucht. Falls es mindestens
      * ein solches Auto gibt, wird der Statuscode `200` (`OK`) gesetzt. Im Rumpf
      * des Response ist das JSON-Array mit den gefundenen Büchern, die jeweils
-     * um Atom-Links für HATEOAS ergänzt sind.
-     *
-     * Falls es kein Auto zu den Suchkriterien gibt, wird der Statuscode `404`
-     * (`Not Found`) gesetzt.
-     *
-     * Falls es keine Query-Parameter gibt, werden alle Bücher ermittelt.
+
+
+     * Falls es keine Query-Parameter gibt, werden alle Autos ermittelt.
+
      *
      * @param query Query-Parameter von Express.
      * @param req Request-Objekt von Express.
@@ -260,7 +252,9 @@ export class AutoGetController {
     @Get()
     @Public()
     @ApiOperation({ summary: 'Suche mit Suchkriterien' })
-    @ApiOkResponse({ description: 'Eine evtl. leere Liste mit Büchern' })
+
+    @ApiOkResponse({ description: 'Eine evtl. leere Liste mit Autos' })
+
     async get(
         @Query() query: AutoQuery,
         @Req() req: Request,
@@ -277,13 +271,13 @@ export class AutoGetController {
         this.#logger.debug('get: %o', autos);
 
         // HATEOAS: Atom Links je Auto
-        const autosModel = autos.map((auto) =>
-            this.#toModel(auto, req, false),
-        );
+
+        const autosModel = autos.map((auto) => this.#toModel(auto, req, false));
         this.#logger.debug('get: autosModel=%o', autosModel);
 
         const result: AutosModel = { _embedded: { autos: autosModel } };
-        return res.contentType(APPLICATION_HAL_JSON).json(result).send(); //TODO zu beschreibung wechseln?
+        return res.contentType(APPLICATION_HAL_JSON).json(result).send();
+        
     }
 
     #toModel(auto: Auto, req: Request, all = true) {
@@ -319,4 +313,5 @@ export class AutoGetController {
         return autoModel;
     }
 }
-/* eslint-enable max-lines */
+
+

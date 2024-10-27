@@ -1,17 +1,3 @@
-// Copyright (C) 2021 - present Juergen Zimmermann, Hochschule Karlsruhe
-//
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 /**
  * Das Modul besteht aus der Controller-Klasse für Schreiben an der REST-Schnittstelle.
@@ -50,16 +36,20 @@ import { AuthGuard, Roles } from 'nest-keycloak-connect';
 import { paths } from '../../config/paths.js';
 import { getLogger } from '../../logger/logger.js';
 import { ResponseTimeInterceptor } from '../../logger/response-time.interceptor.js';
-import { type Zubehoer } from '../entity/zubehoer.entity.js';
-import { type Auto } from '../entity/auto.entity.js';
-import { type Bezeichnung } from '../entity/bezeichnung.entity.js';
+
+import { Auto } from '../entity/auto.entity.js';
+import { Bezeichnung } from '../entity/bezeichnung.entity.js';
+import { Zubehoer } from '../entity/zubehoer.entity.js';
+
 import { AutoWriteService } from '../service/auto-write.service.js';
 import { AutoDTO, AutoDtoOhneRef } from './autoDTO.entity.js';
 import { getBaseUri } from './getBaseUri.js';
 
 const MSG_FORBIDDEN = 'Kein Token mit ausreichender Berechtigung vorhanden';
 /**
- * Die Controller-Klasse für die Verwaltung von Bücher.
+
+ * Die Controller-Klasse für die Verwaltung von Autos.
+
  */
 @Controller(paths.rest)
 @UseGuards(AuthGuard)
@@ -83,7 +73,9 @@ export class AutoWriteController {
      * dass damit das neu angelegte Auto abgerufen werden kann.
      *
      * Falls Constraints verletzt sind, wird der Statuscode `400` (`Bad Request`)
-     * gesetzt und genauso auch wenn der Bezeichnung oder die ISBN-Nummer bereits
+
+     * gesetzt und genauso auch wenn der Bezeichnung oder die Fahrgestellnummer bereits
+
      * existieren.
      *
      * @param autoDTO JSON-Daten für ein Auto im Request-Body.
@@ -114,7 +106,9 @@ export class AutoWriteController {
     /**
      * Ein vorhandenes Auto wird asynchron aktualisiert.
      *
-     * Im Request-Objekt von Express muss die ID des zu aktualisierenden Autoes
+
+     * Im Request-Objekt von Express muss die ID des zu aktualisierenden Autos
+
      * als Pfad-Parameter enthalten sein. Außerdem muss im Rumpf das zu
      * aktualisierende Auto als JSON-Datensatz enthalten sein. Damit die
      * Aktualisierung überhaupt durchgeführt werden kann, muss im Header
@@ -127,8 +121,10 @@ export class AutoWriteController {
      * Falls die Versionsnummer fehlt, wird der Statuscode `428` (`Precondition
      * required`) gesetzt; und falls sie nicht korrekt ist, der Statuscode `412`
      * (`Precondition failed`). Falls Constraints verletzt sind, wird der
-     * Statuscode `400` (`Bad Request`) gesetzt und genauso auch wenn der neue
-     * Bezeichnung oder die neue ISBN-Nummer bereits existieren.
+
+     * Statuscode `400` (`Bad Request`) gesetzt und genauso auch wenn die neue
+     * Bezeichnung oder die neue Fahrgestellnummer bereits existieren.
+
      *
      * @param autoDTO Autodaten im Body des Request-Objekts.
      * @param id Pfad-Paramater für die ID.
