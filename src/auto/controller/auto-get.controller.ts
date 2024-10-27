@@ -1,3 +1,5 @@
+
+
 /**
  * Das Modul besteht aus der Controller-Klasse für Lesen an der REST-Schnittstelle.
  * @packageDocumentation
@@ -63,7 +65,9 @@ export type BezeichnungModel = Omit<Bezeichnung, 'auto' | 'id'>;
 /** Auto-Objekt mit HATEOAS-Links */
 export type AutoModel = Omit<
     Auto,
+
     'zubehoere' | 'aktualisiert' | 'erzeugt' | 'id' | 'bezeichnung' | 'version'
+
 > & {
     bezeichnung: BezeichnungModel;
     // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -117,6 +121,7 @@ export class AutoQuery implements Suchkriterien {
 const APPLICATION_HAL_JSON = 'application/hal+json';
 
 /**
+
  * Die Controller-Klasse für die Verwaltung von Autos.
  */
 // Decorator in TypeScript, zur Standardisierung in ES vorgeschlagen (stage 3)
@@ -145,7 +150,9 @@ export class AutoGetController {
      * Ein Auto wird asynchron anhand seiner ID als Pfadparameter gesucht.
      *
      * Falls es ein solches Auto gibt und `If-None-Match` im Request-Header
+
      * auf die aktuelle Version des Autos gesetzt war, wird der Statuscode
+
      * `304` (`Not Modified`) zurückgeliefert. Falls `If-None-Match` nicht
      * gesetzt ist oder eine veraltete Version enthält, wird das gefundene
      * Auto im Rumpf des Response als JSON-Datensatz mit Atom-Links für HATEOAS
@@ -216,6 +223,7 @@ export class AutoGetController {
         // HATEOAS mit Atom Links und HAL (= Hypertext Application Language)
         const autoModel = this.#toModel(auto, req);
         this.#logger.debug('getById: autoModel=%o', autoModel);
+
         return res.contentType(APPLICATION_HAL_JSON).json(autoModel);
     }
 
@@ -223,12 +231,18 @@ export class AutoGetController {
      * Autos werden mit Query-Parametern asynchron gesucht. Falls es mindestens
      * ein solches Auto gibt, wird der Statuscode `200` (`OK`) gesetzt. Im Rumpf
      * des Response ist das JSON-Array mit den gefundenen Autos, die jeweils
-     * um Atom-Links für HATEOAS ergänzt sind.
-     *
-     * Falls es kein Auto zu den Suchkriterien gibt, wird der Statuscode `404`
-     * (`Not Found`) gesetzt.
-     *
+=======
+        return res.contentType(APPLICATION_HAL_JSON).json(autoModel); // TODO zu beschreibung wechseln?
+    }
+
+    /**
+     * Bücher werden mit Query-Parametern asynchron gesucht. Falls es mindestens
+     * ein solches Auto gibt, wird der Statuscode `200` (`OK`) gesetzt. Im Rumpf
+     * des Response ist das JSON-Array mit den gefundenen Büchern, die jeweils
+
+
      * Falls es keine Query-Parameter gibt, werden alle Autos ermittelt.
+
      *
      * @param query Query-Parameter von Express.
      * @param req Request-Objekt von Express.
@@ -238,7 +252,9 @@ export class AutoGetController {
     @Get()
     @Public()
     @ApiOperation({ summary: 'Suche mit Suchkriterien' })
+
     @ApiOkResponse({ description: 'Eine evtl. leere Liste mit Autos' })
+
     async get(
         @Query() query: AutoQuery,
         @Req() req: Request,
@@ -255,11 +271,13 @@ export class AutoGetController {
         this.#logger.debug('get: %o', autos);
 
         // HATEOAS: Atom Links je Auto
+
         const autosModel = autos.map((auto) => this.#toModel(auto, req, false));
         this.#logger.debug('get: autosModel=%o', autosModel);
 
         const result: AutosModel = { _embedded: { autos: autosModel } };
         return res.contentType(APPLICATION_HAL_JSON).json(result).send();
+        
     }
 
     #toModel(auto: Auto, req: Request, all = true) {
@@ -295,3 +313,5 @@ export class AutoGetController {
         return autoModel;
     }
 }
+
+

@@ -1,3 +1,4 @@
+
 /**
  * Das Modul besteht aus der Controller-Klasse für Schreiben an der REST-Schnittstelle.
  * @packageDocumentation
@@ -35,16 +36,20 @@ import { AuthGuard, Roles } from 'nest-keycloak-connect';
 import { paths } from '../../config/paths.js';
 import { getLogger } from '../../logger/logger.js';
 import { ResponseTimeInterceptor } from '../../logger/response-time.interceptor.js';
+
 import { Auto } from '../entity/auto.entity.js';
 import { Bezeichnung } from '../entity/bezeichnung.entity.js';
 import { Zubehoer } from '../entity/zubehoer.entity.js';
+
 import { AutoWriteService } from '../service/auto-write.service.js';
 import { AutoDTO, AutoDtoOhneRef } from './autoDTO.entity.js';
 import { getBaseUri } from './getBaseUri.js';
 
 const MSG_FORBIDDEN = 'Kein Token mit ausreichender Berechtigung vorhanden';
 /**
+
  * Die Controller-Klasse für die Verwaltung von Autos.
+
  */
 @Controller(paths.rest)
 @UseGuards(AuthGuard)
@@ -68,7 +73,9 @@ export class AutoWriteController {
      * dass damit das neu angelegte Auto abgerufen werden kann.
      *
      * Falls Constraints verletzt sind, wird der Statuscode `400` (`Bad Request`)
+
      * gesetzt und genauso auch wenn der Bezeichnung oder die Fahrgestellnummer bereits
+
      * existieren.
      *
      * @param autoDTO JSON-Daten für ein Auto im Request-Body.
@@ -99,7 +106,9 @@ export class AutoWriteController {
     /**
      * Ein vorhandenes Auto wird asynchron aktualisiert.
      *
+
      * Im Request-Objekt von Express muss die ID des zu aktualisierenden Autos
+
      * als Pfad-Parameter enthalten sein. Außerdem muss im Rumpf das zu
      * aktualisierende Auto als JSON-Datensatz enthalten sein. Damit die
      * Aktualisierung überhaupt durchgeführt werden kann, muss im Header
@@ -112,8 +121,10 @@ export class AutoWriteController {
      * Falls die Versionsnummer fehlt, wird der Statuscode `428` (`Precondition
      * required`) gesetzt; und falls sie nicht korrekt ist, der Statuscode `412`
      * (`Precondition failed`). Falls Constraints verletzt sind, wird der
+
      * Statuscode `400` (`Bad Request`) gesetzt und genauso auch wenn die neue
      * Bezeichnung oder die neue Fahrgestellnummer bereits existieren.
+
      *
      * @param autoDTO Autodaten im Body des Request-Objekts.
      * @param id Pfad-Paramater für die ID.

@@ -13,34 +13,27 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-/* eslint-disable @typescript-eslint/no-magic-numbers */
-
 /**
- * Das Modul besteht aus der Entity-Klasse.
+ * Das Modul besteht aus den Klassen für die Fehlerbehandlung bei GraphQL.
  * @packageDocumentation
  */
 
-import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional, Matches, MaxLength } from 'class-validator';
+import { GraphQLError } from 'graphql';
 
+// https://www.apollographql.com/docs/apollo-server/data/errors
 /**
-
- * Entity-Klasse für die Bezeichnung ohne TypeORM.
-
+ * Error-Klasse für GraphQL, die einen Response mit `errors` und
+ * code `BAD_USER_INPUT` produziert.
  */
-export class BezeichnungDTO {
-    @Matches(String.raw`^\w.*`)
-    @MaxLength(40)
-
-    @ApiProperty({ example: 'Die Bezeichnung', type: String })
-
-    readonly bezeichnung!: string;
-
-    @IsOptional()
-    @MaxLength(40)
-
-    @ApiProperty({ example: 'Zusatz', type: String })
-
-    readonly zusatz: string | undefined;
+export class BadUserInputError extends GraphQLError {
+    // eslint-disable-next-line unicorn/custom-error-definition
+    constructor(message: string, exception?: Error) {
+        super(message, {
+            originalError: exception,
+            extensions: {
+                // https://www.apollographql.com/docs/apollo-server/data/errors/#bad_user_input
+                code: 'BAD_USER_INPUT',
+            },
+        });
+    }
 }
-/* eslint-enable @typescript-eslint/no-magic-numbers */

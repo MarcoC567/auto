@@ -13,34 +13,28 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-/* eslint-disable @typescript-eslint/no-magic-numbers */
-
 /**
- * Das Modul besteht aus der Entity-Klasse.
+ * Das Modul besteht aus der Klasse {@linkcode HttpExceptionFilter}.
  * @packageDocumentation
  */
+import {
+    type ArgumentsHost,
+    Catch,
+    type ExceptionFilter,
+    HttpException,
+} from '@nestjs/common';
+import { BadUserInputError } from './errors.js';
 
-import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional, Matches, MaxLength } from 'class-validator';
+@Catch(HttpException)
+export class HttpExceptionFilter implements ExceptionFilter {
+    catch(exception: HttpException, _host: ArgumentsHost) {
+        const response = exception.getResponse();
+        if (typeof response === 'string') {
+            throw new BadUserInputError(response, exception);
+        }
 
-/**
-
- * Entity-Klasse für die Bezeichnung ohne TypeORM.
-
- */
-export class BezeichnungDTO {
-    @Matches(String.raw`^\w.*`)
-    @MaxLength(40)
-
-    @ApiProperty({ example: 'Die Bezeichnung', type: String })
-
-    readonly bezeichnung!: string;
-
-    @IsOptional()
-    @MaxLength(40)
-
-    @ApiProperty({ example: 'Zusatz', type: String })
-
-    readonly zusatz: string | undefined;
+        // Typ "object", default: mit den Properties statusCode und message
+        const { message } = response as { message: string };
+        throw new BadUserInputError(message, exception);
+    }
 }
-/* eslint-enable @typescript-eslint/no-magic-numbers */
