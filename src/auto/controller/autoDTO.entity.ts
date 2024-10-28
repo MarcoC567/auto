@@ -1,10 +1,8 @@
-
 /**
  * Das Modul besteht aus der Entity-Klasse.
  * @packageDocumentation
  */
 /* eslint-disable max-classes-per-file */
-
 
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
@@ -22,11 +20,9 @@ import { type AutoArt } from '../entity/auto.entity.js';
 import { BezeichnungDTO } from './bezeichnungDTO.entity.js';
 import { ZubehoerDTO } from './zubehoerDTO.entity.js';
 
-
 export const MAX_RATING = 5;
 
 /**
-
  * Entity-Klasse für Autos ohne TypeORM und ohne Referenzen.
  */
 export class AutoDtoOhneRef {
@@ -37,12 +33,10 @@ export class AutoDtoOhneRef {
     @Matches(/^(LIMOUSINE|SUV)$/u)
     @IsOptional()
     @ApiProperty({ example: 'SUV', type: String })
-
     readonly art: AutoArt | undefined;
 
     @IsPositive()
     @ApiProperty({ example: 1, type: Number })
-
     readonly preis!: number;
 
     @IsBoolean()
@@ -73,4 +67,3 @@ export class AutoDTO extends AutoDtoOhneRef {
     readonly zubehoere: ZubehoerDTO[] | undefined;
 }
 /* eslint-enable max-classes-per-file */
-

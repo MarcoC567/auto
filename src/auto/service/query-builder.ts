@@ -64,7 +64,7 @@ export class QueryBuilder {
         if (mitZubehoer) {
             // Fetch-Join: aus QueryBuilder "auto" die Property "zubehoere" -> Tabelle "zuebhoer"
             queryBuilder.leftJoinAndSelect(
-                `${this.#autoAlias}.zubehore`,
+                `${this.#autoAlias}.zubehoere`,
                 this.#zubehoerAlias,
             );
         }
@@ -120,7 +120,7 @@ export class QueryBuilder {
                 typeOrmModuleOptions.type === 'postgres' ? 'ilike' : 'like';
             queryBuilder = queryBuilder.where(
                 `${this.#bezeichnungAlias}.bezeichnung ${ilike} :bezeichnung`,
-                { bezeichnungl: `%${bezeichnung}%` },
+                { bezeichnung: `%${bezeichnung}%` },
             );
             useWhere = false;
         }

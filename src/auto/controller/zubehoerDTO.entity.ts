@@ -1,4 +1,3 @@
-
 /**
  * Das Modul besteht aus der Entity-Klasse.
  * @packageDocumentation
@@ -10,13 +9,11 @@ import { ApiProperty } from '@nestjs/swagger';
 
 import { IsOptional, MaxLength } from 'class-validator';
 
-
 /**
  * Entity-Klasse für Zubehoer ohne TypeORM.
  */
 export class ZubehoerDTO {
     @MaxLength(32)
-
     @ApiProperty({ example: 'Der Name', type: String })
     readonly name!: string;
 
@@ -24,6 +21,5 @@ export class ZubehoerDTO {
     @MaxLength(32)
     @ApiProperty({ example: 'Die Beschreibung', type: String })
     readonly beschreibung: string | undefined;
-
 }
 /* eslint-enable @typescript-eslint/no-magic-numbers */

@@ -68,9 +68,8 @@ type Auto {
 
 "Enum-Typ für die Art eines Autoes"
 enum Art {
-  EPUB
-  HARDCOVER
-  PAPERBACK
+  SUV
+  LIMOUSINE
 }
 
 "Suchkriterien für Bücher"
