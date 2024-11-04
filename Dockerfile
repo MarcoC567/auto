@@ -31,11 +31,11 @@
 # https://cheatsheetseries.owasp.org/cheatsheets/NodeJS_Docker_Cheat_Sheet.html
 
 # "Build Argument"; alternativ: ENV = Umgebungsvariable im gebauten Image
-ARG NODE_VERSION=22.9.0
+ARG NODE_VERSION=23.0.0
 
-# ---------------------------------------------------------------------------------------
-# S t a g e   d i s t
-# ---------------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------------- 
+# S t a g e   d i s t 
+# --------------------------------------------------------------------------------------- 
 FROM node:${NODE_VERSION}-bookworm-slim AS dist
 # FROM node:${NODE_VERSION}-bookworm AS dist
 
@@ -62,28 +62,28 @@ ln -s /usr/bin/python3.11 /usr/bin/python
 npm i -g --no-audit --no-fund npm
 EOF
 
-USER node
+#USER node
 
 WORKDIR /home/node
 
 COPY src ./src
 
-# https://docs.docker.com/engine/reference/builder/#run---mounttypebind
+# Änderungen hier: package-lock.json wird nicht gebunden, sondern kopiert
+COPY package-lock.json ./
 RUN --mount=type=bind,source=package.json,target=package.json \
-    --mount=type=bind,source=package-lock.json,target=package-lock.json \
     --mount=type=bind,source=nest-cli.json,target=nest-cli.json \
     --mount=type=bind,source=tsconfig.json,target=tsconfig.json \
     --mount=type=bind,source=tsconfig.build.json,target=tsconfig.build.json \
     --mount=type=cache,target=/root/.npm <<EOF
 set -eux
 # ci (= clean install) mit package-lock.json
-npm ci --no-audit --no-fund
+npm i --no-audit --no-fund
 npm run build
 EOF
 
-# ------------------------------------------------------------------------------
-# S t a g e   d e p e n d e n c i e s
-# ------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------ 
+# S t a g e   d e p e n d e n c i e s 
+# ------------------------------------------------------------------------------ 
 FROM node:${NODE_VERSION}-bookworm-slim AS dependencies
 
 RUN <<EOF
@@ -98,22 +98,25 @@ ln -s /usr/bin/python3.11 /usr/bin/python
 npm i -g --no-audit --no-fund npm
 EOF
 
-USER node
+#USER node
 
 WORKDIR /home/node
 
+# Änderungen hier: package-lock.json wird nicht gebunden, sondern kopiert
+COPY package-lock.json ./
 RUN --mount=type=bind,source=package.json,target=package.json \
-    --mount=type=bind,source=package-lock.json,target=package-lock.json \
     --mount=type=cache,target=/root/.npm <<EOF
 set -eux
 # ci (= clean install) mit package-lock.json
-# --omit=dev: ohne devDependencies
-npm ci --no-audit --no-fund --omit=dev --omit=peer
-EOF
+npm cache clean --force
 
-# ------------------------------------------------------------------------------
-# S t a g e   f i n a l
-# ------------------------------------------------------------------------------
+npm i --no-audit --no-fund --omit=dev --omit=peer
+EOF
+RUN chown -R node:node /home/node/package-lock.json
+
+# ------------------------------------------------------------------------------ 
+# S t a g e   f i n a l 
+# ------------------------------------------------------------------------------ 
 FROM node:${NODE_VERSION}-bookworm-slim AS final
 
 # Anzeige bei "docker inspect ..."
@@ -129,6 +132,7 @@ LABEL org.opencontainers.image.title="buch" \
 RUN <<EOF
 set -eux
 apt-get update
+apt-get upgrade --yes
 # https://github.com/Yelp/dumb-init
 # https://packages.debian.org/bookworm/dumb-init
 apt-get install --no-install-recommends --yes dumb-init=1.2.5-2
@@ -154,5 +158,5 @@ EXPOSE 3000
 # "Array Syntax" damit auch <Strg>C funktioniert
 # https://github.com/Yelp/dumb-init:
 # "a simple process supervisor and init system designed to run as PID 1 inside
-# minimal container environments (such as Docker)""
+# minimal container environments (such as Docker)"" 
 ENTRYPOINT ["dumb-init", "/usr/local/bin/node", "dist/main.js"]
