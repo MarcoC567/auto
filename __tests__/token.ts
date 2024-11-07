@@ -14,8 +14,8 @@
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import { type AxiosInstance, type AxiosResponse } from 'axios';
-import { type GraphQLQuery } from './buch/buch-mutation.resolver.test.js';
-import { type GraphQLResponseBody } from './buch/buch-query.resolver.test.js';
+import { type GraphQLQuery } from './auto/auto-mutation.resolver.test.js';
+import { type GraphQLResponseBody } from './auto/auto-query.resolver.test.js';
 import { httpsAgent, tokenPath } from './testserver.js';
 
 type TokenResult = {

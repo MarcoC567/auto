@@ -1,4 +1,5 @@
 
+
 ARG NODE_VERSION=22.9.0
 
 
@@ -7,10 +8,13 @@ ARG NODE_VERSION=22.9.0
 # ---------------------------------------------------------------------------------------
 
 
+
 FROM node:${NODE_VERSION}-alpine3.20 AS dist
 
 # ggf. Python fuer Argon2
 ENV PYTHONUNBUFFERED=1
+
+
 
 
 RUN <<EOF
@@ -41,13 +45,12 @@ apk upgrade
 # https://pkgs.alpinelinux.org/package/v3.20/main/x86_64/gcc
 # https://pkgs.alpinelinux.org/package/v3.20/main/x86_64/g++
 # https://pkgs.alpinelinux.org/package/v3.20/main/x86_64/build-base
-# Entferne die feste Version fÃÂ¼r Python 3, um Konflikte zu vermeiden
-
 
 apk add --update --no-cache python3 make=4.4.1-r2 gcc=13.2.1_git20240309-r0 g++=13.2.1_git20240309-r0 build-base=0.5-r3
 ln -sf python3 /usr/bin/python
 npm i -g --no-audit --no-fund npm
 EOF
+
 
 # USER node
 
@@ -58,6 +61,7 @@ EOF
 WORKDIR /home/node
 
 COPY src ./src
+
 
 # https://docs.docker.com/engine/reference/builder/#run---mounttypebind
 RUN --mount=type=bind,source=package.json,target=package.json \
@@ -90,10 +94,12 @@ apk add --update --no-cache python3 make=4.4.1-r2 gcc=13.2.1_git20240309-r0 g++=
 ln -sf python3 /usr/bin/python
 npm i -g --no-audit --no-fund npm
 
+
 EOF
 
 
 #USER node
+
 
 
 WORKDIR /home/node
@@ -119,11 +125,13 @@ FROM node:${NODE_VERSION}-alpine3.20 AS final
 # https://spdx.org/licenses
 # MAINTAINER ist deprecated https://docs.docker.com/engine/reference/builder/#maintainer-deprecated
 
+
 LABEL org.opencontainers.image.title="buch" \
   org.opencontainers.image.description="Appserver buch mit Basis-Image Alpine" \
   org.opencontainers.image.version="2024.10.1-bookworm" \
   org.opencontainers.image.licenses="GPL-3.0-or-later" \
   org.opencontainers.image.authors="Juergen.Zimmermann@h-ka.de"
+
 
 RUN <<EOF
 
@@ -146,7 +154,6 @@ COPY --chown=node:node package.json .env ./
 COPY --from=dependencies --chown=node:node /home/node/node_modules ./node_modules
 COPY --from=dist --chown=node:node /home/node/dist ./dist
 COPY --chown=node:node src/config/resources ./dist/config/resources
-
 EXPOSE 3000
 
 

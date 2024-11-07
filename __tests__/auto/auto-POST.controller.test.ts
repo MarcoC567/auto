@@ -16,8 +16,8 @@
 import { afterAll, beforeAll, describe, expect, test } from '@jest/globals';
 import { HttpStatus } from '@nestjs/common';
 import axios, { type AxiosInstance, type AxiosResponse } from 'axios';
-import { type BuchDTO } from '../../src/auto/controller/buchDTO.entity.js';
-import { BuchReadService } from '../../src/auto/service/buch-read.service.js';
+import { type AutoDTO } from '../../src/auto/controller/autoDTO.entity.js';
+import { AutoReadService } from '../../src/auto/service/auto-read.service.js';
 import {
     host,
     httpsAgent,
@@ -31,56 +31,45 @@ import { type ErrorResponse } from './error-response.js';
 // -----------------------------------------------------------------------------
 // T e s t d a t e n
 // -----------------------------------------------------------------------------
-const neuesBuch: BuchDTO = {
-    isbn: '978-0-007-00644-1',
-    rating: 1,
-    art: 'EPUB',
-    preis: 99.99,
-    rabatt: 0.123,
+const neuesAuto: AutoDTO = {
+    fahrgestellnummer: 'WKN352362I3F555',
+    art: 'SUV',
+    preis: 2000,
     lieferbar: true,
     datum: '2022-02-28',
-    homepage: 'https://post.rest',
-    schlagwoerter: ['JAVASCRIPT', 'TYPESCRIPT'],
-    titel: {
-        titel: 'Titelpost',
-        untertitel: 'untertitelpos',
+    bezeichnung: {
+        bezeichnung: 'Titelpost',
+        zusatz: 'untertitelpos',
     },
-    abbildungen: [
+    zubehoere: [
         {
-            beschriftung: 'Abb. 1',
-            contentType: 'img/png',
+            name: 'Abb. 1',
+            beschreibung: 'img/png',
         },
     ],
 };
-const neuesBuchInvalid: Record<string, unknown> = {
-    isbn: 'falsche-ISBN',
-    rating: -1,
-    art: 'UNSICHTBAR',
-    preis: -1,
-    rabatt: 2,
+const neuesAutoInvalid: Record<string, unknown> = {
+    fahrgestellnummer: 'WKN352362I3F555',
+    art: 'FALSCH',
+    preis: -2000,
     lieferbar: true,
-    datum: '12345-123-123',
-    homepage: 'anyHomepage',
-    titel: {
-        titel: '?!',
-        untertitel: 'Untertitelinvalid',
+    datum: '2022-02-28f',
+    bezeichnung: {
+        bezeichnung: 'Titelpost',
+        zusatz: 'untertitelpos',
     },
 };
-const neuesBuchIsbnExistiert: BuchDTO = {
-    isbn: '978-3-897-22583-1',
-    rating: 1,
-    art: 'EPUB',
-    preis: 99.99,
-    rabatt: 0.099,
+const neuesAutoFahrgestellnummerExistiert: AutoDTO = {
+    fahrgestellnummer: 'WKN352362I3F555',
+    art: 'SUV',
+    preis: 2000,
     lieferbar: true,
     datum: '2022-02-28',
-    homepage: 'https://post.isbn/',
-    schlagwoerter: ['JAVASCRIPT', 'TYPESCRIPT'],
-    titel: {
-        titel: 'Titelpostisbn',
-        untertitel: 'Untertitelpostisbn',
+    bezeichnung: {
+        bezeichnung: 'Titelpost',
+        zusatz: 'untertitelpos',
     },
-    abbildungen: undefined,
+    zubehoere: undefined,
 };
 
 // -----------------------------------------------------------------------------
@@ -109,7 +98,7 @@ describe('POST /rest', () => {
         await shutdownServer();
     });
 
-    test('Neues Buch', async () => {
+    test('Neues Auto', async () => {
         // given
         const token = await tokenRest(client);
         headers.Authorization = `Bearer ${token}`;
@@ -117,7 +106,7 @@ describe('POST /rest', () => {
         // when
         const response: AxiosResponse<string> = await client.post(
             '/rest',
-            neuesBuch,
+            neuesAuto,
             { headers },
         );
 
@@ -138,30 +127,25 @@ describe('POST /rest', () => {
         const idStr = location.slice(indexLastSlash + 1);
 
         expect(idStr).toBeDefined();
-        expect(BuchReadService.ID_PATTERN.test(idStr)).toBe(true);
+        expect(AutoReadService.ID_PATTERN.test(idStr)).toBe(true);
 
         expect(data).toBe('');
     });
 
-    test('Neues Buch mit ungueltigen Daten', async () => {
+    test('Neues Auto mit ungueltigen Daten', async () => {
         // given
         const token = await tokenRest(client);
         headers.Authorization = `Bearer ${token}`;
         const expectedMsg = [
-            expect.stringMatching(/^isbn /u),
-            expect.stringMatching(/^rating /u),
             expect.stringMatching(/^art /u),
             expect.stringMatching(/^preis /u),
-            expect.stringMatching(/^rabatt /u),
             expect.stringMatching(/^datum /u),
-            expect.stringMatching(/^homepage /u),
-            expect.stringMatching(/^titel.titel /u),
         ];
 
         // when
         const response: AxiosResponse<Record<string, any>> = await client.post(
             '/rest',
-            neuesBuchInvalid,
+            neuesAutoInvalid,
             { headers },
         );
 
@@ -178,7 +162,7 @@ describe('POST /rest', () => {
         expect(messages).toEqual(expect.arrayContaining(expectedMsg));
     });
 
-    test('Neues Buch, aber die ISBN existiert bereits', async () => {
+    test('Neues Auto, aber die Fahrgestellnummer existiert bereits', async () => {
         // given
         const token = await tokenRest(client);
         headers.Authorization = `Bearer ${token}`;
@@ -186,7 +170,7 @@ describe('POST /rest', () => {
         // when
         const response: AxiosResponse<ErrorResponse> = await client.post(
             '/rest',
-            neuesBuchIsbnExistiert,
+            neuesAutoFahrgestellnummerExistiert,
             { headers },
         );
 
@@ -195,22 +179,22 @@ describe('POST /rest', () => {
 
         const { message, statusCode } = data;
 
-        expect(message).toEqual(expect.stringContaining('ISBN'));
+        expect(message).toEqual(expect.stringContaining('fahrgestellnummer'));
         expect(statusCode).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
     });
 
-    test('Neues Buch, aber ohne Token', async () => {
+    test('Neues Auto, aber ohne Token', async () => {
         // when
         const response: AxiosResponse<Record<string, any>> = await client.post(
             '/rest',
-            neuesBuch,
+            neuesAuto,
         );
 
         // then
         expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
     });
 
-    test('Neues Buch, aber mit falschem Token', async () => {
+    test('Neues Auto, aber mit falschem Token', async () => {
         // given
         const token = 'FALSCH';
         headers.Authorization = `Bearer ${token}`;
@@ -218,7 +202,7 @@ describe('POST /rest', () => {
         // when
         const response: AxiosResponse<Record<string, any>> = await client.post(
             '/rest',
-            neuesBuch,
+            neuesAuto,
             { headers },
         );
 

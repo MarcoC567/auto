@@ -18,8 +18,8 @@
 import { afterAll, beforeAll, describe, expect, test } from '@jest/globals';
 import { HttpStatus } from '@nestjs/common';
 import axios, { type AxiosInstance, type AxiosResponse } from 'axios';
-import { type GraphQLQuery } from '../buch/buch-mutation.resolver.test.js';
-import { type GraphQLResponseBody } from '../buch/buch-query.resolver.test.js';
+import { type GraphQLQuery } from '../auto/auto-mutation.resolver.test.js';
+import { type GraphQLResponseBody } from '../auto/auto-query.resolver.test.js';
 import {
     host,
     httpsAgent,
