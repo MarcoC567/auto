@@ -31,16 +31,12 @@ import { IsOptional, Matches, MaxLength } from 'class-validator';
 export class BezeichnungDTO {
     @Matches(String.raw`^\w.*`)
     @MaxLength(40)
-
     @ApiProperty({ example: 'Die Bezeichnung', type: String })
-
     readonly bezeichnung!: string;
 
     @IsOptional()
     @MaxLength(40)
-
     @ApiProperty({ example: 'Zusatz', type: String })
-
     readonly zusatz: string | undefined;
 }
 /* eslint-enable @typescript-eslint/no-magic-numbers */

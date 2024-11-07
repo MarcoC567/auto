@@ -1,10 +1,7 @@
-
-
 /**
  * Das Modul besteht aus der Controller-Klasse für Lesen an der REST-Schnittstelle.
  * @packageDocumentation
  */
-
 // eslint-disable-next-line max-classes-per-file
 import {
     Controller,
@@ -65,9 +62,7 @@ export type BezeichnungModel = Omit<Bezeichnung, 'auto' | 'id'>;
 /** Auto-Objekt mit HATEOAS-Links */
 export type AutoModel = Omit<
     Auto,
-
     'zubehoere' | 'aktualisiert' | 'erzeugt' | 'id' | 'bezeichnung' | 'version'
-
 > & {
     bezeichnung: BezeichnungModel;
     // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -230,16 +225,7 @@ export class AutoGetController {
     /**
      * Autos werden mit Query-Parametern asynchron gesucht. Falls es mindestens
      * ein solches Auto gibt, wird der Statuscode `200` (`OK`) gesetzt. Im Rumpf
-     * des Response ist das JSON-Array mit den gefundenen Autos, die jeweils
-=======
-        return res.contentType(APPLICATION_HAL_JSON).json(autoModel); // TODO zu beschreibung wechseln?
-    }
-
-    /**
-     * Bücher werden mit Query-Parametern asynchron gesucht. Falls es mindestens
-     * ein solches Auto gibt, wird der Statuscode `200` (`OK`) gesetzt. Im Rumpf
      * des Response ist das JSON-Array mit den gefundenen Büchern, die jeweils
-
 
      * Falls es keine Query-Parameter gibt, werden alle Autos ermittelt.
 
@@ -252,9 +238,7 @@ export class AutoGetController {
     @Get()
     @Public()
     @ApiOperation({ summary: 'Suche mit Suchkriterien' })
-
     @ApiOkResponse({ description: 'Eine evtl. leere Liste mit Autos' })
-
     async get(
         @Query() query: AutoQuery,
         @Req() req: Request,
@@ -277,7 +261,6 @@ export class AutoGetController {
 
         const result: AutosModel = { _embedded: { autos: autosModel } };
         return res.contentType(APPLICATION_HAL_JSON).json(result).send();
-        
     }
 
     #toModel(auto: Auto, req: Request, all = true) {
@@ -313,5 +296,3 @@ export class AutoGetController {
         return autoModel;
     }
 }
-
-

@@ -486,7 +486,6 @@ module.exports = {
         '@stylistic/member-delimiter-style': ['error', {
             multiline: { delimiter: 'semi' },
         }],
-        '@stylistic/multiline-comment-style': ['error', 'separate-lines'],
         '@stylistic/operator-linebreak': 'off',
         '@stylistic/quote-props': ['error', 'as-needed'],
         '@stylistic/semi': ['error', 'always'],

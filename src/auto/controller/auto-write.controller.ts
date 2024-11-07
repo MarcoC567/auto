@@ -1,4 +1,3 @@
-
 /**
  * Das Modul besteht aus der Controller-Klasse für Schreiben an der REST-Schnittstelle.
  * @packageDocumentation
